@@ -79,5 +79,8 @@ cairo:
     sed 's?no (requires zlib http://www.gzip.org/zlib/)?yes?' ./configure > configure2
     emconfigure ./configure2 ax_cv_c_float_words_bigendian=no
     sed 's?aclocal-1.15?aclocal-1.16?' ./Makefile > Makefile2
-    make -f Makefile2 -j8
-    
+
+# Dev
+
+    npx wrangler dev
+    while true; do clear; curl -v -m 2 "http://localhost:8787/" ; sleep 1; done
