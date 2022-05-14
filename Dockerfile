@@ -5,7 +5,8 @@ RUN apt update &&\
     apt install -y pkgconf python3
 
 # deb-src
-RUN sed -i "s/# deb-src/deb-src/g" /etc/apt/sources.list &&\
+RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
+    sed -i "s|^deb-src http://archive.canonical.com/ubuntu|# deb-src http://archive.canonical.com/ubuntu|g" /etc/apt/sources.list &&\
     apt update
 
 # opencv
