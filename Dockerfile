@@ -18,3 +18,12 @@ RUN mkdir -p /i &&\
     emmake python3 ./platforms/js/build_js.py --build_wasm $(emcmake echo | awk -v RS=' ' -v ORS=' ' '{print "--cmake_option=\""$1"\""}') --cmake_option="-DCMAKE_INSTALL_PREFIX=/emsdk/upstream/emscripten/cache/sysroot" build &&\
     cmake --build build -j8 &&\
     cmake --install build
+
+# freetype
+RUN mkdir -p /i &&\
+    cd /i &&\
+    apt source freetype &&\
+    cd freetype-* &&\
+    emcmake cmake -B build &&\
+    cmake --build build -j8 &&\
+    cmake --install build
