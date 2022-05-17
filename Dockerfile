@@ -56,7 +56,7 @@ RUN mkdir -p /i &&\
     cd /i &&\
     apt source pixman &&\
     cd pixman-* &&\
-    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
     emmake make -j8 &&\
     emmake make install 
 
