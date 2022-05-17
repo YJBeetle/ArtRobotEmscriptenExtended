@@ -24,9 +24,11 @@ RUN mkdir -p /i &&\
     cd /i &&\
     apt source zlib &&\
     cd zlib-* &&\
-    mkdir win32 && touch win32/zlib1.rc &&\
+    mkdir -p win32 && touch win32/zlib1.rc &&\
+    sed -i "s|add_library(zlib SHARED |add_library(zlib STATIC |g" CMakeLists.txt &&\
+    sed -i "s|share/pkgconfig|lib/pkgconfig|g" CMakeLists.txt &&\
     emcmake cmake -B build &&\
-    cmake --build build -j8 &&\
+    cmake --build build &&\
     cmake --install build
 
 # libpng
