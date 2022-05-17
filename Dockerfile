@@ -61,20 +61,20 @@ RUN mkdir -p /i &&\
     emmake make install 
 
 # cairo
-# 需要 libpng pixman freetype
+# 需要 libpng pixman freetype zlib
 RUN mkdir -p /i &&\
     cd /i &&\
     apt source cairo &&\
     cd cairo-* &&\
-    emconfigure ./configure --enable-static -without-x \
-        --disable-xlib --disable-xlib-xrender --disable-directfb --disable-win32 --disable-pdf --disable-ps --disable-svg \
-        --enable-script=no --enable-png \
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared -without-x \
+        --disable-xlib --disable-xlib-xrender --disable-directfb --disable-win32 --disable-script \
+        --enable-pdf --enable-ps --enable-svg --enable-png \
         --disable-interpreter --disable-xlib-xcb --disable-xcb --disable-xcb-shm \
-        --enable-ft --enable-fc=no \
-        ax_cv_c_float_words_bigendian=no \
+        --enable-ft --disable-fc \
+        ax_cv_c_float_words_bigendian=no ac_cv_lib_z_compress=yes \
         FREETYPE_CFLAGS="$(emmake pkg-config --cflags freetype2)" FREETYPE_LIBS="$(emmake pkg-config --libs freetype2)" \
         png_CFLAGS="$(emmake pkg-config --cflags libpng)" png_LIBS="$(emmake pkg-config --libs libpng)" \
         pixman_CFLAGS="$(emmake pkg-config --cflags pixman-1)" pixman_LIBS="$(emmake pkg-config --libs pixman-1)" \
-        LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
+        CFLAGS="$(emmake pkg-config --cflags zlib) -DCAIRO_NO_MUTEX=1" LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
     emmake make -j8 &&\
-    emmake make install prefix=/emsdk/upstream/emscripten/cache/sysroot
+    emmake make install
