@@ -35,7 +35,7 @@ RUN mkdir -p /i &&\
     cd /i &&\
     apt source libpng1.6 &&\
     cd libpng1.6-* &&\
-    emcmake cmake -B build -DM_LIBRARY= &&\
+    emcmake cmake -B build -DPNG_SHARED=no -DPNG_STATIC=yes -DPNG_FRAMEWORK=no -DM_LIBRARY="" &&\
     cmake --build build -j8 &&\
     cmake --install build
 
