@@ -56,9 +56,9 @@ RUN mkdir -p /i &&\
     cd /i &&\
     apt source pixman &&\
     cd pixman-* &&\
-    emconfigure ./configure &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot &&\
     emmake make -j8 &&\
-    emmake make install prefix=/emsdk/upstream/emscripten/cache/sysroot
+    emmake make install 
 
 # cairo
 # 需要 libpng pixman freetype
