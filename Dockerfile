@@ -78,3 +78,12 @@ RUN mkdir -p /i &&\
         CFLAGS="$(emmake pkg-config --cflags zlib) -DCAIRO_NO_MUTEX=1" LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
     emmake make -j8 &&\
     emmake make install
+
+# libffi
+RUN mkdir -p /i &&\
+    cd /i &&\
+    apt source libffi &&\
+    cd libffi-* &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot &&\
+    emmake make -j8 &&\
+    emmake make install
