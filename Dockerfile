@@ -1,13 +1,11 @@
 FROM emscripten/emsdk:latest
 
 # APT
-RUN apt update &&\
-    apt install -y pkgconf python3 cargo automake-1.15
-
-# deb-src
 RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
     sed -i "s|^deb-src http://archive.canonical.com/ubuntu|# deb-src http://archive.canonical.com/ubuntu|g" /etc/apt/sources.list &&\
-    apt update
+    apt update &&\
+    apt install -y python3 cargo automake-1.15 pkg-config &&\
+    python3 -m pip install meson
 
 # opencv
 RUN mkdir -p /i &&\
@@ -58,7 +56,7 @@ RUN mkdir -p /i &&\
     cd pixman-* &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
     emmake make -j8 &&\
-    emmake make install 
+    emmake make install
 
 # cairo
 # 需要 libpng pixman freetype zlib
