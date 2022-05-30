@@ -4,7 +4,7 @@ FROM emscripten/emsdk:latest
 RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
     sed -i "s|^deb-src http://archive.canonical.com/ubuntu|# deb-src http://archive.canonical.com/ubuntu|g" /etc/apt/sources.list &&\
     apt update &&\
-    apt install -y python3 cargo pkg-config automake-1.15 libtool ninja-build &&\
+    apt install -y python3 cargo pkg-config automake-1.15 libtool ninja-build gperf &&\
     python3 -m pip install meson
 
 # opencv
@@ -45,6 +45,7 @@ RUN mkdir -p /i &&\
     cd /i &&\
     apt source freetype &&\
     cd freetype-* &&\
+    sed -i "s|find_package(HarfBuzz 1.3.0)||g" CMakeLists.txt &&\
     emcmake cmake -B build &&\
     cmake --build build -j8 &&\
     cmake --install build
@@ -165,6 +166,16 @@ RUN mkdir -p /i &&\
     sed -i "s|unsigned int  size0, size1, supp_size;|unsigned int  size0, size1;|g" src/hb-subset-cff1.cc &&\
     sed -i "s|supp_size = 0;||g" src/hb-subset-cff1.cc &&\
     sed -i "s|supp_size += SuppEncoding::static_size \* supp_codes.length;||g" src/hb-subset-cff1.cc &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
+    emmake make -j8 &&\
+    emmake make install
+
+# expat
+RUN mkdir -p /i &&\
+    cd /i &&\
+    apt source expat &&\
+    cd expat-*/expat &&\
+    emmake ./buildconf.sh &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
     emmake make -j8 &&\
     emmake make install
