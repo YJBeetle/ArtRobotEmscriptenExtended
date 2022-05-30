@@ -179,3 +179,13 @@ RUN mkdir -p /i &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
     emmake make -j8 &&\
     emmake make install
+
+# fontconfig
+# 需要 freetype2 expat
+RUN mkdir -p /i &&\
+    cd /i &&\
+    apt source fontconfig &&\
+    cd fontconfig-* &&\
+    sed -i "s|freetype2 >= 21.0.15|freetype2|g" configure &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
+    emmake make -j8
