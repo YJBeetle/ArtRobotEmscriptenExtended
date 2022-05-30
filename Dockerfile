@@ -128,3 +128,43 @@ endian = 'little' \n\
         build &&\
     ninja -C build &&\
     ninja -C build install
+
+# fribidi
+RUN mkdir -p /i &&\
+    cd /i &&\
+    apt source fribidi &&\
+    cd fribidi-* &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
+    emmake make -j8 &&\
+    emmake make install
+
+# libdatrie
+RUN mkdir -p /i &&\
+    cd /i &&\
+    apt source libdatrie &&\
+    cd libdatrie-* &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
+    emmake make -j8 &&\
+    emmake make install
+
+# libthai
+# 需要 libdatrie
+RUN mkdir -p /i &&\
+    cd /i &&\
+    apt source libthai &&\
+    cd libthai-* &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared --disable-dict &&\
+    emmake make -j8 &&\
+    emmake make install
+
+# harfbuzz
+RUN mkdir -p /i &&\
+    cd /i &&\
+    apt source harfbuzz &&\
+    cd harfbuzz-* &&\
+    sed -i "s|unsigned int  size0, size1, supp_size;|unsigned int  size0, size1;|g" src/hb-subset-cff1.cc &&\
+    sed -i "s|supp_size = 0;||g" src/hb-subset-cff1.cc &&\
+    sed -i "s|supp_size += SuppEncoding::static_size \* supp_codes.length;||g" src/hb-subset-cff1.cc &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
+    emmake make -j8 &&\
+    emmake make install
