@@ -4,7 +4,7 @@ FROM emscripten/emsdk:latest
 RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
     sed -i "s|^deb-src http://archive.canonical.com/ubuntu|# deb-src http://archive.canonical.com/ubuntu|g" /etc/apt/sources.list &&\
     apt update &&\
-    apt install -y python3 cargo automake-1.15 pkg-config ninja-build &&\
+    apt install -y python3 cargo pkg-config automake-1.15 libtool ninja-build &&\
     python3 -m pip install meson
 
 # opencv
@@ -80,9 +80,13 @@ RUN mkdir -p /i &&\
 # libffi
 RUN mkdir -p /i &&\
     cd /i &&\
-    apt source libffi &&\
-    cd libffi-* &&\
-    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot &&\
+    wget https://github.com/libffi/libffi/releases/download/v3.4.2/libffi-3.4.2.tar.gz &&\
+    tar xvf libffi-3.4.2.tar.gz &&\
+    cd libffi-3.4.2 &&\
+    curl -Ls https://github.com/kleisauke/wasm-vips/raw/master/build/patches/libffi-emscripten.patch | patch -p1 &&\
+    autoreconf -fiv &&\
+    emconfigure ./configure --host=wasm32-unknown-linux -prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared \
+        --disable-dependency-tracking --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs &&\
     emmake make -j8 &&\
     emmake make install
 
@@ -90,8 +94,11 @@ RUN mkdir -p /i &&\
 # 需要 libffi
 RUN mkdir -p /i &&\
     cd /i &&\
-    apt source glib2.0 &&\
-    cd glib2.0-* &&\
+    wget https://download.gnome.org/sources/glib/2.73/glib-2.73.0.tar.xz &&\
+    tar xvf glib-2.73.0.tar.xz &&\
+    cd glib-2.73.0 &&\
+    curl -Ls https://github.com/kleisauke/wasm-vips/raw/master/build/patches/glib-emscripten.patch | patch -p1 &&\
+    curl -Ls https://github.com/kleisauke/wasm-vips/raw/master/build/patches/glib-function-pointers.patch | patch -p1 &&\
     echo -e "\
 [binaries] \n\
 c = '/emsdk/upstream/emscripten/emcc' \n\
@@ -103,8 +110,6 @@ pkgconfig = ['emmake', 'pkg-config'] \n\
 [built-in options] \n\
 c_thread_count = 0 \n\
 cpp_thread_count = 0 \n\
-c_link_args = ['-L/emsdk/upstream/emscripten/cache/sysroot/lib'] \n\
-cpp_link_args = ['-L/emsdk/upstream/emscripten/cache/sysroot/lib'] \n\
 [properties] \n\
 root = '/emsdk/upstream/emscripten/cache/sysroot/' \n\
 shared_lib_suffix = 'js' \n\
@@ -117,11 +122,9 @@ cpu_family = 'wasm32' \n\
 cpu = 'wasm32' \n\
 endian = 'little' \n\
 " > emscripten.txt &&\
-    sed -i -e ':a' -e 'N' -e '$!ba' -e "s|if host_system != 'windows'\n  # res_query()|if host_system != 'windows' and host_system != 'emscripten'\n  # res_query()|g" gio/meson.build &&\
-    sed -i "s|if cc.get_id() == 'gcc' and not cc.compiles(atomicdefine, name : 'atomic ops define')|if not cc.compiles(atomicdefine, name : 'atomic ops define')|g" meson.build &&\
-    sed -i "s|if cc.has_function('posix_spawn', prefix : '#include <spawn.h>')|if host_system != 'emscripten' and cc.has_function('posix_spawn', prefix : '#include <spawn.h>')|g" meson.build &&\
     emmake meson --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=emscripten.txt \
         --default-library=static --buildtype=release --force-fallback-for=libpcre \
         -Diconv="libc" -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled \
         build &&\
-    ninja -C build
+    ninja -C build &&\
+    ninja -C build install
