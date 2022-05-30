@@ -4,7 +4,7 @@ FROM emscripten/emsdk:latest
 RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
     sed -i "s|^deb-src http://archive.canonical.com/ubuntu|# deb-src http://archive.canonical.com/ubuntu|g" /etc/apt/sources.list &&\
     apt update &&\
-    apt install -y python3 cargo automake-1.15 pkg-config &&\
+    apt install -y python3 cargo automake-1.15 pkg-config ninja-build &&\
     python3 -m pip install meson
 
 # opencv
@@ -85,3 +85,43 @@ RUN mkdir -p /i &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot &&\
     emmake make -j8 &&\
     emmake make install
+
+# glib2.0
+# 需要 libffi
+RUN mkdir -p /i &&\
+    cd /i &&\
+    apt source glib2.0 &&\
+    cd glib2.0-* &&\
+    echo -e "\
+[binaries] \n\
+c = '/emsdk/upstream/emscripten/emcc' \n\
+cpp = '/emsdk/upstream/emscripten/em++' \n\
+ar = '/emsdk/upstream/emscripten/emar' \n\
+ld = '/emsdk/upstream/bin/wasm-ld' \n\
+ranlib = '/emsdk/upstream/emscripten/emranlib' \n\
+pkgconfig = ['emmake', 'pkg-config'] \n\
+[built-in options] \n\
+c_thread_count = 0 \n\
+cpp_thread_count = 0 \n\
+c_link_args = ['-L/emsdk/upstream/emscripten/cache/sysroot/lib'] \n\
+cpp_link_args = ['-L/emsdk/upstream/emscripten/cache/sysroot/lib'] \n\
+[properties] \n\
+root = '/emsdk/upstream/emscripten/cache/sysroot/' \n\
+shared_lib_suffix = 'js' \n\
+static_lib_suffix = 'js' \n\
+shared_module_suffix = 'js' \n\
+exe_suffix = 'js' \n\
+[host_machine] \n\
+system = 'emscripten' \n\
+cpu_family = 'wasm32' \n\
+cpu = 'wasm32' \n\
+endian = 'little' \n\
+" > emscripten.txt &&\
+    sed -i -e ':a' -e 'N' -e '$!ba' -e "s|if host_system != 'windows'\n  # res_query()|if host_system != 'windows' and host_system != 'emscripten'\n  # res_query()|g" gio/meson.build &&\
+    sed -i "s|if cc.get_id() == 'gcc' and not cc.compiles(atomicdefine, name : 'atomic ops define')|if not cc.compiles(atomicdefine, name : 'atomic ops define')|g" meson.build &&\
+    sed -i "s|if cc.has_function('posix_spawn', prefix : '#include <spawn.h>')|if host_system != 'emscripten' and cc.has_function('posix_spawn', prefix : '#include <spawn.h>')|g" meson.build &&\
+    emmake meson --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=emscripten.txt \
+        --default-library=static --buildtype=release --force-fallback-for=libpcre \
+        -Diconv="libc" -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled \
+        build &&\
+    ninja -C build
