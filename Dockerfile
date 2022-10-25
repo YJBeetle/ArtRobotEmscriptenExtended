@@ -1,5 +1,7 @@
 FROM emscripten/emsdk:latest
 
+ENV OPENCV_VERSION=4.6.0
+
 # APT
 RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
     sed -i "s|^deb-src http://archive.canonical.com/ubuntu|# deb-src http://archive.canonical.com/ubuntu|g" /etc/apt/sources.list &&\
@@ -10,9 +12,9 @@ RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
 # opencv
 RUN mkdir -p /i &&\
     cd /i &&\
-    wget https://github.com/opencv/opencv/archive/refs/tags/4.5.5.tar.gz -O opencv-4.5.5.tar.gz &&\
-    tar xvf opencv-4.5.5.tar.gz &&\
-    cd opencv-4.5.5 &&\
+    wget https://github.com/opencv/opencv/archive/refs/tags/${OPENCV_VERSION}.tar.gz -O opencv-${OPENCV_VERSION}.tar.gz &&\
+    tar xvf opencv-${OPENCV_VERSION}.tar.gz &&\
+    cd opencv-${OPENCV_VERSION} &&\
     emmake python3 ./platforms/js/build_js.py --build_wasm $(emcmake echo | awk -v RS=' ' -v ORS=' ' '{print "--cmake_option=\""$1"\""}') --cmake_option="-DCMAKE_INSTALL_PREFIX=/emsdk/upstream/emscripten/cache/sysroot" build &&\
     cmake --build build -j8 &&\
     cmake --install build
