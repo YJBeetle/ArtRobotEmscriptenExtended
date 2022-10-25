@@ -3,6 +3,7 @@ FROM emscripten/emsdk:latest
 ENV OPENCV_VERSION=4.6.0
 ENV ZLIB_VERSION=1.2.13
 ENV PNG_VERSION=1.6.38
+ENV BZIP2_VERSION=1.0.8
 ENV FREETYPE_VERSION=2.12.1
 ENV IFFI_VERSION=3.4.4
 
@@ -46,8 +47,21 @@ RUN mkdir -p /i &&\
     cmake --build build -j8 &&\
     cmake --install build
 
+# bzip2
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz &&\
+    tar xvf bzip2-${BZIP2_VERSION}.tar.gz &&\
+    cd bzip2-${BZIP2_VERSION} &&\
+    sed -i "s|CC=gcc|CC=/emsdk/upstream/emscripten/emcc|g" Makefile &&\
+    sed -i "s|AR=ar|AR=/emsdk/upstream/emscripten/emar|g" Makefile &&\
+    sed -i "s|RANLIB=ranlib|RANLIB=/emsdk/upstream/emscripten/emranlib|g" Makefile &&\
+    sed -i "s|CC=gcc|CC=/emsdk/upstream/emscripten/emcc|g" Makefile-libbz2_so &&\
+    emmake make bzip2 -j8 &&\
+    emmake make install PREFIX=/emsdk/upstream/emscripten/cache/sysroot &&\
+
 # freetype
-# 需要 libpng zlib
+# 需要 libpng zlib bzip2
 RUN mkdir -p /i &&\
     cd /i &&\
     wget https://download.sourceforge.net/freetype/freetype-${FREETYPE_VERSION}.tar.xz &&\
