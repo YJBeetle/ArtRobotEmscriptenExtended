@@ -2,6 +2,7 @@ FROM emscripten/emsdk:latest
 
 ENV OPENCV_VERSION=4.6.0
 ENV ZLIB_VERSION=1.2.13
+ENV PNG_VERSION=1.6.38
 ENV IFFI_VERSION=3.4.4
 
 # APT
@@ -37,8 +38,9 @@ RUN mkdir -p /i &&\
 # 需要 zlib
 RUN mkdir -p /i &&\
     cd /i &&\
-    apt source libpng1.6 &&\
-    cd libpng1.6-* &&\
+    wget https://download.sourceforge.net/libpng/libpng-${PNG_VERSION}.tar.xz &&\
+    tar xvf libpng-${PNG_VERSION}.tar.xz &&\
+    cd libpng-${PNG_VERSION} &&\
     emcmake cmake -B build -DPNG_SHARED=no -DPNG_STATIC=yes -DPNG_FRAMEWORK=no -DM_LIBRARY="" &&\
     cmake --build build -j8 &&\
     cmake --install build
