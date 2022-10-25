@@ -1,6 +1,7 @@
 FROM emscripten/emsdk:latest
 
 ENV OPENCV_VERSION=4.6.0
+ENV ZLIB_VERSION=1.2.13
 ENV IFFI_VERSION=3.4.4
 
 # APT
@@ -23,9 +24,9 @@ RUN mkdir -p /i &&\
 # zlib
 RUN mkdir -p /i &&\
     cd /i &&\
-    apt source zlib &&\
-    cd zlib-* &&\
-    mkdir -p win32 && touch win32/zlib1.rc &&\
+    wget https://github.com/madler/zlib/releases/download/v${ZLIB_VERSION}/zlib-${ZLIB_VERSION}.tar.xz &&\
+    tar xvf zlib-${ZLIB_VERSION}.tar.xz &&\
+    cd zlib-${ZLIB_VERSION} &&\
     sed -i "s|add_library(zlib SHARED |add_library(zlib STATIC |g" CMakeLists.txt &&\
     sed -i "s|share/pkgconfig|lib/pkgconfig|g" CMakeLists.txt &&\
     emcmake cmake -B build &&\
