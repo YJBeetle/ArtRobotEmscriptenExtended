@@ -3,6 +3,7 @@ FROM emscripten/emsdk:latest
 ENV OPENCV_VERSION=4.6.0
 ENV ZLIB_VERSION=1.2.13
 ENV PNG_VERSION=1.6.38
+ENV FREETYPE_VERSION=2.12.1
 ENV IFFI_VERSION=3.4.4
 
 # APT
@@ -49,9 +50,9 @@ RUN mkdir -p /i &&\
 # 需要 libpng zlib
 RUN mkdir -p /i &&\
     cd /i &&\
-    apt source freetype &&\
-    cd freetype-* &&\
-    sed -i "s|find_package(HarfBuzz 1.3.0)||g" CMakeLists.txt &&\
+    wget https://download.sourceforge.net/freetype/freetype-${FREETYPE_VERSION}.tar.xz &&\
+    tar xvf freetype-${FREETYPE_VERSION}.tar.xz &&\
+    cd freetype-${FREETYPE_VERSION} &&\
     emcmake cmake -B build &&\
     cmake --build build -j8 &&\
     cmake --install build
