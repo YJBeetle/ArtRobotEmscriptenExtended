@@ -6,6 +6,7 @@ ENV PNG_VERSION=1.6.38
 ENV BZIP2_VERSION=1.0.8
 ENV FREETYPE_VERSION=2.12.1
 ENV PIXMAN_VERSION=0.42.0
+ENV CAIRO_VERSION=1.16.0
 ENV IFFI_VERSION=3.4.4
 
 # APT
@@ -87,8 +88,9 @@ RUN mkdir -p /i &&\
 # 需要 libpng pixman freetype zlib
 RUN mkdir -p /i &&\
     cd /i &&\
-    apt source cairo &&\
-    cd cairo-* &&\
+    wget https://www.cairographics.org/releases/cairo-${CAIRO_VERSION}.tar.xz &&\
+    tar xvf cairo-${CAIRO_VERSION}.tar.xz &&\
+    cd cairo-${CAIRO_VERSION} &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared -without-x \
         --disable-xlib --disable-xlib-xrender --disable-directfb --disable-win32 --disable-script \
         --enable-pdf --enable-ps --enable-svg --enable-png \
