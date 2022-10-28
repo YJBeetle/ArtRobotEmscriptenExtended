@@ -5,6 +5,7 @@ ENV ZLIB_VERSION=1.2.13
 ENV PNG_VERSION=1.6.38
 ENV BZIP2_VERSION=1.0.8
 ENV FREETYPE_VERSION=2.12.1
+ENV PIXMAN_VERSION=0.42.0
 ENV IFFI_VERSION=3.4.4
 
 # APT
@@ -72,11 +73,13 @@ RUN mkdir -p /i &&\
     cmake --install build
 
 # pixman
+# 需要 zlib
 RUN mkdir -p /i &&\
     cd /i &&\
-    apt source pixman &&\
-    cd pixman-* &&\
-    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
+    wget https://www.cairographics.org/releases/pixman-${PIXMAN_VERSION}.tar.gz &&\
+    tar xvf pixman-${PIXMAN_VERSION}.tar.gz &&\
+    cd pixman-${PIXMAN_VERSION} &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
     emmake make -j8 &&\
     emmake make install
 
