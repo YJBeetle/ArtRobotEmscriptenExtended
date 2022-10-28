@@ -112,8 +112,8 @@ RUN mkdir -p /i &&\
     cd libffi-${IFFI_VERSION} &&\
     # see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L203
     curl -Ls https://github.com/libffi/libffi/compare/v${IFFI_VERSION}...kleisauke:wasm-vips.patch | patch -p1 &&\
-    autoreconf -fiv
-    sed -i 's/ -fexceptions//g' configure
+    autoreconf -fiv &&\
+    sed -i 's/ -fexceptions//g' configure &&\
     emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs --disable-docs &&\
     emmake make -j8 &&\
     emmake make install
