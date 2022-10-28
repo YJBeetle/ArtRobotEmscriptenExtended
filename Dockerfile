@@ -8,6 +8,7 @@ ENV FREETYPE_VERSION=2.12.1
 ENV PIXMAN_VERSION=0.42.0
 ENV CAIRO_VERSION=1.16.0
 ENV IFFI_VERSION=3.4.4
+ENV GLIB_VERSION=2.74.1
 
 # APT
 RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
@@ -118,15 +119,15 @@ RUN mkdir -p /i &&\
     emmake make -j8 &&\
     emmake make install
 
-# glib2.0
+# glib
 # 需要 libffi
 RUN mkdir -p /i &&\
     cd /i &&\
-    wget https://download.gnome.org/sources/glib/2.73/glib-2.73.0.tar.xz &&\
-    tar xvf glib-2.73.0.tar.xz &&\
-    cd glib-2.73.0 &&\
-    curl -Ls https://github.com/kleisauke/wasm-vips/raw/master/build/patches/glib-emscripten.patch | patch -p1 &&\
-    curl -Ls https://github.com/kleisauke/wasm-vips/raw/master/build/patches/glib-function-pointers.patch | patch -p1 &&\
+    wget https://download.gnome.org/sources/glib/${GLIB_VERSION%.*}/glib-${GLIB_VERSION}.tar.xz &&\
+    tar xvf glib-${GLIB_VERSION}.tar.xz &&\
+    cd glib-${GLIB_VERSION} &&\
+    # see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L220
+    curl -Ls https://github.com/GNOME/glib/compare/${GLIB_VERSION}...kleisauke:wasm-vips.patch | patch -p1 &&\
     echo -e "\
 [binaries] \n\
 c = '/emsdk/upstream/emscripten/emcc' \n\
@@ -139,23 +140,20 @@ pkgconfig = ['emmake', 'pkg-config'] \n\
 c_thread_count = 0 \n\
 cpp_thread_count = 0 \n\
 [properties] \n\
-root = '/emsdk/upstream/emscripten/cache/sysroot/' \n\
-shared_lib_suffix = 'js' \n\
-static_lib_suffix = 'js' \n\
-shared_module_suffix = 'js' \n\
-exe_suffix = 'js' \n\
+growing_stack = true \n\
+have_c99_vsnprintf = true \n\
+have_c99_snprintf = true \n\
+have_unix98_printf = true \n\
 [host_machine] \n\
 system = 'emscripten' \n\
 cpu_family = 'wasm32' \n\
 cpu = 'wasm32' \n\
 endian = 'little' \n\
 " > emscripten.txt &&\
-    emmake meson --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=emscripten.txt \
-        --default-library=static --buildtype=release --force-fallback-for=libpcre \
-        -Diconv="libc" -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled \
-        build &&\
-    ninja -C build &&\
-    ninja -C build install
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=emscripten.txt --default-library=static --buildtype=release \
+        --force-fallback-for=gvdb -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled \
+        -Dtests=false -Dglib_assert=false -Dglib_checks=false &&\
+    meson install -C build
 
 # fribidi
 RUN mkdir -p /i &&\
