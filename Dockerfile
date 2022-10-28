@@ -60,7 +60,7 @@ RUN mkdir -p /i &&\
     sed -i "s|RANLIB=ranlib|RANLIB=/emsdk/upstream/emscripten/emranlib|g" Makefile &&\
     sed -i "s|CC=gcc|CC=/emsdk/upstream/emscripten/emcc|g" Makefile-libbz2_so &&\
     emmake make bzip2 -j8 &&\
-    emmake make install PREFIX=/emsdk/upstream/emscripten/cache/sysroot &&\
+    emmake make install PREFIX=/emsdk/upstream/emscripten/cache/sysroot
 
 # freetype
 # 需要 libpng zlib bzip2
