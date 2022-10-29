@@ -206,13 +206,13 @@ RUN mkdir -p /i &&\
     emmake make install
 
 # fontconfig
-# 需要 freetype2 expat
+# 需要 freetype expat
 RUN mkdir -p /i &&\
     cd /i &&\
     wget https://www.freedesktop.org/software/fontconfig/release/fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
     tar xvf fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
     cd fontconfig-${FONTCONFIG_VERSION} &&\
-    sed -i "s|error('FIXME: implement cc.preprocess')|cpp += ['-E', '-P']|g" src/meson.build &&\
+    sed -i "s|error('FIXME: implement cc.preprocess')|cpp += \['-E', '-P'\]|g" src/meson.build &&\
     meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dtests=disabled -Ddoc=disabled -Dtools=disabled &&\
     meson compile -C build &&\
