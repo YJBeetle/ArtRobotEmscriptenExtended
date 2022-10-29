@@ -134,30 +134,7 @@ RUN mkdir -p /i &&\
     emmake make install
 
 # meson
-RUN mkdir -p /i &&\
-    cd /i &&\
-    echo -e "\
-[binaries] \n\
-c = '/emsdk/upstream/emscripten/emcc' \n\
-cpp = '/emsdk/upstream/emscripten/em++' \n\
-ar = '/emsdk/upstream/emscripten/emar' \n\
-ld = '/emsdk/upstream/bin/wasm-ld' \n\
-ranlib = '/emsdk/upstream/emscripten/emranlib' \n\
-pkgconfig = ['emmake', 'pkg-config'] \n\
-[built-in options] \n\
-c_thread_count = 0 \n\
-cpp_thread_count = 0 \n\
-[properties] \n\
-growing_stack = true \n\
-have_c99_vsnprintf = true \n\
-have_c99_snprintf = true \n\
-have_unix98_printf = true \n\
-[host_machine] \n\
-system = 'emscripten' \n\
-cpu_family = 'wasm32' \n\
-cpu = 'wasm32' \n\
-endian = 'little' \n\
-" > emscripten.txt
+ADD emscripten.txt /i/emscripten.txt
 
 # glib
 # 需要 libffi
