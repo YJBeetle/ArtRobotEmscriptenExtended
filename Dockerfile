@@ -204,6 +204,10 @@ RUN mkdir -p /i &&\
     wget https://download.gnome.org/sources/pango/1.50/pango-${PANGO_VERSION}.tar.xz &&\
     tar xvf pango-${PANGO_VERSION}.tar.xz &&\
     cd pango-${PANGO_VERSION} &&\
+    sed -i "s|subdir('examples')||g" meson.build &&\
+    sed -i "s|subdir('tests')||g" meson.build &&\
+    sed -i "s|subdir('utils')||g" meson.build &&\
+    sed -i "s|subdir('tools')||g" meson.build &&\
     meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dintrospection=disabled -Dinstall-tests=false &&\
     meson compile -C build &&\
