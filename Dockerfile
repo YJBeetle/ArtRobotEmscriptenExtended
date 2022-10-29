@@ -11,6 +11,7 @@ ENV CAIRO_VERSION=1.16.0
 ENV IFFI_VERSION=3.4.4
 ENV GLIB_VERSION=2.74.1
 ENV HARFBUZZ_VERSION=5.3.1
+ENV FRIBIDI_VERSION=1.0.12
 
 # APT
 RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
@@ -182,6 +183,17 @@ RUN mkdir -p /i &&\
     meson compile -C build &&\
     meson install -C build
 
+# fribidi
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://github.com/fribidi/fribidi/releases/download/v1.0.12/fribidi-${FRIBIDI_VERSION}.tar.xz &&\
+    tar xvf fribidi-${FRIBIDI_VERSION}.tar.xz &&\
+    cd fribidi-${FRIBIDI_VERSION} &&\
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+        -Dtests=false -Ddocs=false &&\
+    meson compile -C build &&\
+    meson install -C build
+
 # expat
 RUN mkdir -p /i &&\
     cd /i &&\
@@ -201,5 +213,3 @@ RUN mkdir -p /i &&\
     sed -i "s|freetype2 >= 21.0.15|freetype2|g" configure &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
     emmake make -j8
-
-# PanGo
