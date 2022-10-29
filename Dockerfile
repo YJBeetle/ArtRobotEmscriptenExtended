@@ -10,6 +10,7 @@ ENV PIXMAN_VERSION=0.42.0
 ENV CAIRO_VERSION=1.16.0
 ENV IFFI_VERSION=3.4.4
 ENV GLIB_VERSION=2.74.1
+ENV HARFBUZZ_VERSION=5.3.1
 
 # APT
 RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
@@ -170,45 +171,16 @@ RUN mkdir -p /i &&\
         -Dtests=false -Dglib_assert=false -Dglib_checks=false &&\
     meson install -C build
 
-# fribidi
-RUN mkdir -p /i &&\
-    cd /i &&\
-    apt source fribidi &&\
-    cd fribidi-* &&\
-    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
-    emmake make -j8 &&\
-    emmake make install
-
-# libdatrie
-RUN mkdir -p /i &&\
-    cd /i &&\
-    apt source libdatrie &&\
-    cd libdatrie-* &&\
-    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
-    emmake make -j8 &&\
-    emmake make install
-
-# libthai
-# 需要 libdatrie
-RUN mkdir -p /i &&\
-    cd /i &&\
-    apt source libthai &&\
-    cd libthai-* &&\
-    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared --disable-dict &&\
-    emmake make -j8 &&\
-    emmake make install
-
 # harfbuzz
 RUN mkdir -p /i &&\
     cd /i &&\
-    apt source harfbuzz &&\
-    cd harfbuzz-* &&\
-    sed -i "s|unsigned int  size0, size1, supp_size;|unsigned int  size0, size1;|g" src/hb-subset-cff1.cc &&\
-    sed -i "s|supp_size = 0;||g" src/hb-subset-cff1.cc &&\
-    sed -i "s|supp_size += SuppEncoding::static_size \* supp_codes.length;||g" src/hb-subset-cff1.cc &&\
-    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
-    emmake make -j8 &&\
-    emmake make install
+    wget https://github.com/harfbuzz/harfbuzz/releases/download/${HARFBUZZ_VERSION}/harfbuzz-${HARFBUZZ_VERSION}.tar.xz &&\
+    tar xvf harfbuzz-${HARFBUZZ_VERSION}.tar.xz &&\
+    cd harfbuzz-${HARFBUZZ_VERSION} &&\
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+        -Dglib=disabled -Dgobject=disabled -Dcairo=enabled -Dfreetype=enabled -Ddocs=disabled -Dtests=disabled &&\
+    meson compile -C build &&\
+    meson install -C build
 
 # expat
 RUN mkdir -p /i &&\
@@ -229,3 +201,5 @@ RUN mkdir -p /i &&\
     sed -i "s|freetype2 >= 21.0.15|freetype2|g" configure &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
     emmake make -j8
+
+# PanGo
