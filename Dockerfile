@@ -1,6 +1,7 @@
 FROM emscripten/emsdk:latest
 
 ENV OPENCV_VERSION=4.6.0
+ENV JPEG_VERSION=2.1.4
 ENV ZLIB_VERSION=1.2.13
 ENV PNG_VERSION=1.6.38
 ENV BZIP2_VERSION=1.0.8
@@ -24,6 +25,16 @@ RUN mkdir -p /i &&\
     tar xvf opencv-${OPENCV_VERSION}.tar.gz &&\
     cd opencv-${OPENCV_VERSION} &&\
     emmake python3 ./platforms/js/build_js.py --build_wasm $(emcmake echo | awk -v RS=' ' -v ORS=' ' '{print "--cmake_option=\""$1"\""}') --cmake_option="-DCMAKE_INSTALL_PREFIX=/emsdk/upstream/emscripten/cache/sysroot" build &&\
+    cmake --build build -j8 &&\
+    cmake --install build
+
+# libjpeg
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://github.com/libjpeg-turbo/libjpeg-turbo/archive/refs/tags/${JPEG_VERSION}.tar.gz -O libjpeg-turbo-${JPEG_VERSION}.tar.gz &&\
+    tar xvf libjpeg-turbo-${JPEG_VERSION}.tar.gz &&\
+    cd libjpeg-turbo-${JPEG_VERSION} &&\
+    emcmake cmake -B build -DCMAKE_INSTALL_PREFIX=/emsdk/upstream/emscripten/cache/sysroot &&\
     cmake --build build -j8 &&\
     cmake --install build
 
