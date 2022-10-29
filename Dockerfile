@@ -223,7 +223,7 @@ RUN mkdir -p /i &&\
     wget https://download.gnome.org/sources/libxml2/${XML_VERSION%.*}/libxml2-${XML_VERSION}.tar.xz &&\
     tar xvf libxml2-${XML_VERSION}.tar.xz &&\
     cd libxml2-${XML_VERSION} &&\
-    emconfigure ./configure --without-python &&\
+    emconfigure ./configure --without-python --libdir=/emsdk/upstream/emscripten/cache/sysroot/lib &&\
     emmake make -j8 &&\
     emmake make install
 
