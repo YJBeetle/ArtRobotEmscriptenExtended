@@ -14,10 +14,11 @@ ENV HARFBUZZ_VERSION=5.3.1
 ENV FRIBIDI_VERSION=1.0.12
 ENV EXPAT_VERSION=2.5.0
 ENV FONTCONFIG_VERSION=2.14.1
+ENV PANGO_VERSION=1.50.11
 
 # APT
 RUN apt update &&\
-    apt install -y python3 cargo pkg-config libtool ninja-build gperf &&\
+    apt install -y python3 cargo pkg-config libtool ninja-build gperf libglib2.0-dev-bin &&\
     python3 -m pip install meson
 
 # opencv
@@ -215,5 +216,17 @@ RUN mkdir -p /i &&\
     sed -i "s|error('FIXME: implement cc.preprocess')|cpp += \['-E', '-P'\]|g" src/meson.build &&\
     meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dtests=disabled -Ddoc=disabled -Dtools=disabled &&\
+    meson compile -C build &&\
+    meson install -C build
+
+# Pango
+# 需要 harfbuzz fribidi fontconfig freetype glib cairo libglib2.0-dev-bin
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://download.gnome.org/sources/pango/1.50/pango-${PANGO_VERSION}.tar.xz &&\
+    tar xvf pango-${PANGO_VERSION}.tar.xz &&\
+    cd pango-${PANGO_VERSION} &&\
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+        -Dintrospection=disabled -Dinstall-tests=false &&\
     meson compile -C build &&\
     meson install -C build
