@@ -13,6 +13,7 @@ ENV GLIB_VERSION=2.74.1
 ENV HARFBUZZ_VERSION=5.3.1
 ENV FRIBIDI_VERSION=1.0.12
 ENV EXPAT_VERSION=2.5.0
+ENV FONTCONFIG_VERSION=2.14.1
 
 # APT
 RUN apt update &&\
@@ -208,8 +209,11 @@ RUN mkdir -p /i &&\
 # 需要 freetype2 expat
 RUN mkdir -p /i &&\
     cd /i &&\
-    apt source fontconfig &&\
-    cd fontconfig-* &&\
-    sed -i "s|freetype2 >= 21.0.15|freetype2|g" configure &&\
-    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
-    emmake make -j8
+    wget https://www.freedesktop.org/software/fontconfig/release/fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
+    tar xvf fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
+    cd fontconfig-${FONTCONFIG_VERSION} &&\
+    sed -i "s|error('FIXME: implement cc.preprocess')|cpp += ['-E', '-P']|g" src/meson.build &&\
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+        -Dtests=disabled -Ddoc=disabled -Dtools=disabled &&\
+    meson compile -C build &&\
+    meson install -C build
