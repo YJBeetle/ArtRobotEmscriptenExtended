@@ -8,7 +8,6 @@ worker/
 node_modules/
 dist/
 build/
-emscripten.*
 .cargo-ok
 
 .DS_Store
