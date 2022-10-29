@@ -19,6 +19,7 @@ ENV FRIBIDI_VERSION=1.0.12
 ENV PANGO_VERSION=1.50.11
 ENV XML_VERSION=2.10.3
 ENV SHARED_MIME_INFO_VERSION=2.2
+ENV GDK_PIXBUF_VERSION=2.42.9
 
 # APT
 RUN apt update &&\
@@ -243,3 +244,18 @@ RUN mkdir -p /i &&\
     meson compile -C build &&\
     meson install -C build &&\
     ln -s /emsdk/upstream/emscripten/cache/sysroot/share/pkgconfig/shared-mime-info.pc /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/shared-mime-info.pc
+
+# gdk-pixbuf
+# 需要 shared-mime-info
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://download.gnome.org/sources/gdk-pixbuf/${GDK_PIXBUF_VERSION%.*}/gdk-pixbuf-${GDK_PIXBUF_VERSION}.tar.xz &&\
+    tar xvf gdk-pixbuf-${GDK_PIXBUF_VERSION}.tar.xz &&\
+    cd gdk-pixbuf-${GDK_PIXBUF_VERSION} &&\
+    sed -i "s|\[ 'gdk-pixbuf-csource' \],||g" gdk-pixbuf/meson.build &&\
+    sed -i "s|\[ 'gdk-pixbuf-pixdata' \],||g" gdk-pixbuf/meson.build &&\
+    sed -i "s|\[ 'gdk-pixbuf-query-loaders', \[ 'queryloaders.c' \] \],||g" gdk-pixbuf/meson.build &&\
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+        -Dman=false -Dtests=false -Dbuiltin_loaders=none &&\
+    meson compile -C build &&\
+    meson install -C build
