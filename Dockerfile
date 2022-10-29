@@ -17,6 +17,7 @@ ENV GLIB_VERSION=2.74.1
 ENV HARFBUZZ_VERSION=5.3.1
 ENV FRIBIDI_VERSION=1.0.12
 ENV PANGO_VERSION=1.50.11
+ENV XML_VERSION=2.10.3
 
 # APT
 RUN apt update &&\
@@ -214,3 +215,13 @@ RUN mkdir -p /i &&\
         -Dintrospection=disabled -Dinstall-tests=false &&\
     meson compile -C build &&\
     meson install -C build
+
+# libxml2
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://download.gnome.org/sources/libxml2/${XML_VERSION%.*}/libxml2-${XML_VERSION}.tar.xz &&\
+    tar xvf libxml2-${XML_VERSION}.tar.xz &&\
+    cd libxml2-${XML_VERSION} &&\
+    emconfigure ./configure --without-python &&\
+    emmake make -j8 &&\
+    emmake make install
