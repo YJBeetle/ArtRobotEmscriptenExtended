@@ -12,6 +12,7 @@ ENV IFFI_VERSION=3.4.4
 ENV GLIB_VERSION=2.74.1
 ENV HARFBUZZ_VERSION=5.3.1
 ENV FRIBIDI_VERSION=1.0.12
+ENV EXPAT_VERSION=2.5.0
 
 # APT
 RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
@@ -197,9 +198,10 @@ RUN mkdir -p /i &&\
 # expat
 RUN mkdir -p /i &&\
     cd /i &&\
-    apt source expat &&\
-    cd expat-*/expat &&\
-    emmake ./buildconf.sh &&\
+    wget https://github.com/libexpat/libexpat/releases/download/R_${EXPAT_VERSION//./_}/expat-${EXPAT_VERSION}.tar.xz &&\
+    tar xvf expat-${EXPAT_VERSION}.tar.xz &&\
+    cd expat-${EXPAT_VERSION} &&\
+    emmake ./buildconf.sh --force &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
     emmake make -j8 &&\
     emmake make install
