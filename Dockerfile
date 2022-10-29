@@ -18,10 +18,11 @@ ENV HARFBUZZ_VERSION=5.3.1
 ENV FRIBIDI_VERSION=1.0.12
 ENV PANGO_VERSION=1.50.11
 ENV XML_VERSION=2.10.3
+ENV SHARED_MIME_INFO_VERSION=2.2
 
 # APT
 RUN apt update &&\
-    apt install -y python3 cargo pkg-config libtool ninja-build gperf libglib2.0-dev-bin &&\
+    apt install -y python3 cargo pkg-config libtool ninja-build gperf libglib2.0-dev-bin gettext &&\
     python3 -m pip install meson
 
 # meson
@@ -225,3 +226,20 @@ RUN mkdir -p /i &&\
     emconfigure ./configure --without-python &&\
     emmake make -j8 &&\
     emmake make install
+
+# shared-mime-info
+# 需要 gettext
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://gitlab.freedesktop.org/xdg/shared-mime-info/-/archive/${SHARED_MIME_INFO_VERSION}/shared-mime-info-${SHARED_MIME_INFO_VERSION}.tar.bz2 &&\
+    tar xvf shared-mime-info-${SHARED_MIME_INFO_VERSION}.tar.bz2 &&\
+    cd shared-mime-info-${SHARED_MIME_INFO_VERSION} &&\
+    git clone https://gitlab.freedesktop.org/xdg/xdgmime.git &&\
+    cd xdgmime/src &&\
+    make &&\
+    cd ../../ &&\
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+        -Dbuild-tools=false &&\
+    meson compile -C build &&\
+    meson install -C build &&\
+    ln -s /emsdk/upstream/emscripten/cache/sysroot/share/pkgconfig/shared-mime-info.pc /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/shared-mime-info.pc
