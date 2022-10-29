@@ -20,6 +20,7 @@ ENV PANGO_VERSION=1.50.11
 ENV XML_VERSION=2.10.3
 ENV SHARED_MIME_INFO_VERSION=2.2
 ENV GDK_PIXBUF_VERSION=2.42.9
+ENV RSVG_VERSION=2.55.1
 
 # APT
 RUN apt update &&\
@@ -259,3 +260,15 @@ RUN mkdir -p /i &&\
         -Dman=false -Dtests=false -Dbuiltin_loaders=none &&\
     meson compile -C build &&\
     meson install -C build
+
+# rsvg
+# 需要 libxml2 gdk-pixbuf
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://download.gnome.org/sources/librsvg/${RSVG_VERSION%.*}/librsvg-${RSVG_VERSION}.tar.xz &&\
+    tar xvf librsvg-${RSVG_VERSION}.tar.xz &&\
+    cd librsvg-${RSVG_VERSION} &&\
+    ln -s /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/gio-2.0.pc /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/gio-unix-2.0.pc &&\
+    emconfigure ./configure --disable-pixbuf-loader --disable-gtk-doc --disable-introspection &&\
+    emmake make -j8 &&\
+    emmake make install
