@@ -21,6 +21,9 @@ RUN apt update &&\
     apt install -y python3 cargo pkg-config libtool ninja-build gperf libglib2.0-dev-bin &&\
     python3 -m pip install meson
 
+# meson
+ADD emscripten.txt /i/emscripten.txt
+
 # opencv
 RUN mkdir -p /i &&\
     cd /i &&\
@@ -132,9 +135,6 @@ RUN mkdir -p /i &&\
     emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs --disable-docs &&\
     emmake make -j8 &&\
     emmake make install
-
-# meson
-ADD emscripten.txt /i/emscripten.txt
 
 # glib
 # 需要 libffi
