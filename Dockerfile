@@ -15,10 +15,8 @@ ENV FRIBIDI_VERSION=1.0.12
 ENV EXPAT_VERSION=2.5.0
 
 # APT
-RUN sed -i "s|^# deb-src|deb-src|g" /etc/apt/sources.list &&\
-    sed -i "s|^deb-src http://archive.canonical.com/ubuntu|# deb-src http://archive.canonical.com/ubuntu|g" /etc/apt/sources.list &&\
-    apt update &&\
-    apt install -y python3 cargo pkg-config automake-1.15 libtool ninja-build gperf &&\
+RUN apt update &&\
+    apt install -y python3 cargo pkg-config libtool ninja-build gperf &&\
     python3 -m pip install meson
 
 # opencv
