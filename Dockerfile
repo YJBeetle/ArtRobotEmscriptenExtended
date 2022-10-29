@@ -91,6 +91,30 @@ RUN mkdir -p /i &&\
     cmake --build build -j8 &&\
     cmake --install build
 
+# expat
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://github.com/libexpat/libexpat/releases/download/R_${EXPAT_VERSION//./_}/expat-${EXPAT_VERSION}.tar.xz &&\
+    tar xvf expat-${EXPAT_VERSION}.tar.xz &&\
+    cd expat-${EXPAT_VERSION} &&\
+    emmake ./buildconf.sh --force &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
+    emmake make -j8 &&\
+    emmake make install
+
+# fontconfig
+# 需要 freetype expat
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://www.freedesktop.org/software/fontconfig/release/fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
+    tar xvf fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
+    cd fontconfig-${FONTCONFIG_VERSION} &&\
+    sed -i "s|error('FIXME: implement cc.preprocess')|cpp += \['-E', '-P'\]|g" src/meson.build &&\
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+        -Dtests=disabled -Ddoc=disabled -Dtools=disabled &&\
+    meson compile -C build &&\
+    meson install -C build
+
 # pixman
 # 需要 zlib
 RUN mkdir -p /i &&\
@@ -169,30 +193,6 @@ RUN mkdir -p /i &&\
     cd fribidi-${FRIBIDI_VERSION} &&\
     meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dtests=false -Ddocs=false &&\
-    meson compile -C build &&\
-    meson install -C build
-
-# expat
-RUN mkdir -p /i &&\
-    cd /i &&\
-    wget https://github.com/libexpat/libexpat/releases/download/R_${EXPAT_VERSION//./_}/expat-${EXPAT_VERSION}.tar.xz &&\
-    tar xvf expat-${EXPAT_VERSION}.tar.xz &&\
-    cd expat-${EXPAT_VERSION} &&\
-    emmake ./buildconf.sh --force &&\
-    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
-    emmake make -j8 &&\
-    emmake make install
-
-# fontconfig
-# 需要 freetype expat
-RUN mkdir -p /i &&\
-    cd /i &&\
-    wget https://www.freedesktop.org/software/fontconfig/release/fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
-    tar xvf fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
-    cd fontconfig-${FONTCONFIG_VERSION} &&\
-    sed -i "s|error('FIXME: implement cc.preprocess')|cpp += \['-E', '-P'\]|g" src/meson.build &&\
-    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
-        -Dtests=disabled -Ddoc=disabled -Dtools=disabled &&\
     meson compile -C build &&\
     meson install -C build
 
