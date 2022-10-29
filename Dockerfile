@@ -130,15 +130,9 @@ RUN mkdir -p /i &&\
     emmake make -j8 &&\
     emmake make install
 
-# glib
-# 需要 libffi
+# meson
 RUN mkdir -p /i &&\
     cd /i &&\
-    wget https://download.gnome.org/sources/glib/${GLIB_VERSION%.*}/glib-${GLIB_VERSION}.tar.xz &&\
-    tar xvf glib-${GLIB_VERSION}.tar.xz &&\
-    cd glib-${GLIB_VERSION} &&\
-    # see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L220
-    curl -Ls https://github.com/GNOME/glib/compare/${GLIB_VERSION}...kleisauke:wasm-vips.patch | patch -p1 &&\
     echo -e "\
 [binaries] \n\
 c = '/emsdk/upstream/emscripten/emcc' \n\
@@ -160,8 +154,18 @@ system = 'emscripten' \n\
 cpu_family = 'wasm32' \n\
 cpu = 'wasm32' \n\
 endian = 'little' \n\
-" > emscripten.txt &&\
-    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=emscripten.txt --default-library=static --buildtype=release \
+" > emscripten.txt
+
+# glib
+# 需要 libffi
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://download.gnome.org/sources/glib/${GLIB_VERSION%.*}/glib-${GLIB_VERSION}.tar.xz &&\
+    tar xvf glib-${GLIB_VERSION}.tar.xz &&\
+    cd glib-${GLIB_VERSION} &&\
+    # see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L220
+    curl -Ls https://github.com/GNOME/glib/compare/${GLIB_VERSION}...kleisauke:wasm-vips.patch | patch -p1 &&\
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         --force-fallback-for=gvdb -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled \
         -Dtests=false -Dglib_assert=false -Dglib_checks=false &&\
     meson install -C build
