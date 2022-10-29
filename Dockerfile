@@ -1,5 +1,7 @@
 FROM emscripten/emsdk:latest
 
+SHELL ["/bin/bash", "-c"]
+
 ENV OPENCV_VERSION=4.6.0
 ENV JPEG_VERSION=2.1.4
 ENV ZLIB_VERSION=1.2.13
