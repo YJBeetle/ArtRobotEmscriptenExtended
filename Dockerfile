@@ -269,7 +269,7 @@ RUN mkdir -p /i &&\
     tar xvf librsvg-${RSVG_VERSION}.tar.xz &&\
     cd librsvg-${RSVG_VERSION} &&\
     ln -s /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/gio-2.0.pc /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/gio-unix-2.0.pc &&\
-    emconfigure ./configure --disable-dependency-tracking --disable-shared --enable-static \
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-dependency-tracking --disable-shared --enable-static \
         --disable-gtk-doc --disable-installed-tests --disable-always-build-tests --disable-pixbuf-loader --disable-introspection &&\
     emmake make -j8 &&\
     emmake make install
