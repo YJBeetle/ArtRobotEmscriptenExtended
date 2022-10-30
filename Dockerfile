@@ -43,7 +43,7 @@ RUN mkdir -p /i &&\
 # libjpeg
 RUN mkdir -p /i &&\
     cd /i &&\
-    wget https://github.com/libjpeg-turbo/libjpeg-turbo/archive/refs/tags/${JPEG_VERSION}.tar.gz -O libjpeg-turbo-${JPEG_VERSION}.tar.gz &&\
+    wget https://download.sourceforge.net/libjpeg-turbo/libjpeg-turbo-${JPEG_VERSION}.tar.gz &&\
     tar xvf libjpeg-turbo-${JPEG_VERSION}.tar.gz &&\
     cd libjpeg-turbo-${JPEG_VERSION} &&\
     emcmake cmake -B build -DCMAKE_INSTALL_PREFIX=/emsdk/upstream/emscripten/cache/sysroot &&\
