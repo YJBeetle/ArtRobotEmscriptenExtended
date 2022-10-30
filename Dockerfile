@@ -132,27 +132,6 @@ RUN mkdir -p /i &&\
     emmake make -j8 &&\
     emmake make install
 
-# cairo
-# 需要 libpng pixman freetype zlib
-RUN mkdir -p /i &&\
-    cd /i &&\
-    wget https://www.cairographics.org/releases/cairo-${CAIRO_VERSION}.tar.xz &&\
-    tar xvf cairo-${CAIRO_VERSION}.tar.xz &&\
-    cd cairo-${CAIRO_VERSION} &&\
-    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared -without-x \
-        --disable-xlib --disable-xlib-xrender --disable-directfb --disable-win32 --enable-script \
-        --enable-pdf --enable-ps --enable-svg --enable-png \
-        --enable-interpreter --disable-xlib-xcb --disable-xcb --disable-xcb-shm \
-        --enable-ft --enable-fc \
-        ax_cv_c_float_words_bigendian=no ac_cv_lib_z_compress=yes \
-        FREETYPE_CFLAGS="$(emmake pkg-config --cflags freetype2)" FREETYPE_LIBS="$(emmake pkg-config --libs freetype2)" \
-        FONTCONFIG_CFLAGS="$(emmake pkg-config --cflags fontconfig)" FONTCONFIG_LIBS="$(emmake pkg-config --libs fontconfig)" \
-        png_CFLAGS="$(emmake pkg-config --cflags libpng)" png_LIBS="$(emmake pkg-config --libs libpng)" \
-        pixman_CFLAGS="$(emmake pkg-config --cflags pixman-1)" pixman_LIBS="$(emmake pkg-config --libs pixman-1)" \
-        CFLAGS="$(emmake pkg-config --cflags zlib) -DCAIRO_NO_MUTEX=1" LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
-    emmake make -j8 &&\
-    emmake make install
-
 # libffi
 # see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L203
 RUN mkdir -p /i &&\
@@ -180,6 +159,27 @@ RUN mkdir -p /i &&\
         --force-fallback-for=gvdb -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled \
         -Dtests=false -Dglib_assert=false -Dglib_checks=false &&\
     meson install -C build
+
+# cairo
+# 需要 libpng pixman freetype zlib glib
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://www.cairographics.org/releases/cairo-${CAIRO_VERSION}.tar.xz &&\
+    tar xvf cairo-${CAIRO_VERSION}.tar.xz &&\
+    cd cairo-${CAIRO_VERSION} &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared -without-x \
+        --disable-xlib --disable-xlib-xrender --disable-directfb --disable-win32 --enable-script \
+        --enable-pdf --enable-ps --enable-svg --enable-png \
+        --enable-interpreter --disable-xlib-xcb --disable-xcb --disable-xcb-shm \
+        --enable-ft --enable-fc \
+        ax_cv_c_float_words_bigendian=no ac_cv_lib_z_compress=yes \
+        FREETYPE_CFLAGS="$(emmake pkg-config --cflags freetype2)" FREETYPE_LIBS="$(emmake pkg-config --libs freetype2)" \
+        FONTCONFIG_CFLAGS="$(emmake pkg-config --cflags fontconfig)" FONTCONFIG_LIBS="$(emmake pkg-config --libs fontconfig)" \
+        png_CFLAGS="$(emmake pkg-config --cflags libpng)" png_LIBS="$(emmake pkg-config --libs libpng)" \
+        pixman_CFLAGS="$(emmake pkg-config --cflags pixman-1)" pixman_LIBS="$(emmake pkg-config --libs pixman-1)" \
+        CFLAGS="$(emmake pkg-config --cflags zlib) -DCAIRO_NO_MUTEX=1" LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
+    emmake make -j8 &&\
+    emmake make install
 
 # harfbuzz
 RUN mkdir -p /i &&\
