@@ -38,7 +38,7 @@ RUN mkdir -p /i &&\
     tar xvf opencv-${OPENCV_VERSION}.tar.gz &&\
     cd opencv-${OPENCV_VERSION} &&\
     emmake python3 ./platforms/js/build_js.py --build_wasm $(emcmake echo | awk -v RS=' ' -v ORS=' ' '{print "--cmake_option=\""$1"\""}') --cmake_option="-DCMAKE_INSTALL_PREFIX=/emsdk/upstream/emscripten/cache/sysroot" build &&\
-    cmake --build build -j8 &&\
+    cmake --build build -j2 &&\
     cmake --install build
 
 # libjpeg
@@ -48,7 +48,7 @@ RUN mkdir -p /i &&\
     tar xvf libjpeg-turbo-${JPEG_VERSION}.tar.gz &&\
     cd libjpeg-turbo-${JPEG_VERSION} &&\
     emcmake cmake -B build -DCMAKE_INSTALL_PREFIX=/emsdk/upstream/emscripten/cache/sysroot &&\
-    cmake --build build -j8 &&\
+    cmake --build build -j2 &&\
     cmake --install build
 
 # zlib
@@ -71,7 +71,7 @@ RUN mkdir -p /i &&\
     tar xvf libpng-${PNG_VERSION}.tar.xz &&\
     cd libpng-${PNG_VERSION} &&\
     emcmake cmake -B build -DPNG_SHARED=no -DPNG_STATIC=yes -DPNG_FRAMEWORK=no -DM_LIBRARY="" &&\
-    cmake --build build -j8 &&\
+    cmake --build build -j2 &&\
     cmake --install build
 
 # bzip2
@@ -84,7 +84,7 @@ RUN mkdir -p /i &&\
     sed -i "s|AR=ar|AR=/emsdk/upstream/emscripten/emar|g" Makefile &&\
     sed -i "s|RANLIB=ranlib|RANLIB=/emsdk/upstream/emscripten/emranlib|g" Makefile &&\
     sed -i "s|CC=gcc|CC=/emsdk/upstream/emscripten/emcc|g" Makefile-libbz2_so &&\
-    emmake make bzip2 -j8 &&\
+    emmake make bzip2 -j2 &&\
     emmake make install PREFIX=/emsdk/upstream/emscripten/cache/sysroot
 
 # freetype
@@ -95,7 +95,7 @@ RUN mkdir -p /i &&\
     tar xvf freetype-${FREETYPE_VERSION}.tar.xz &&\
     cd freetype-${FREETYPE_VERSION} &&\
     emcmake cmake -B build &&\
-    cmake --build build -j8 &&\
+    cmake --build build -j2 &&\
     cmake --install build
 
 # expat
@@ -106,7 +106,7 @@ RUN mkdir -p /i &&\
     cd expat-${EXPAT_VERSION} &&\
     emmake ./buildconf.sh --force &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
-    emmake make -j8 &&\
+    emmake make -j2 &&\
     emmake make install
 
 # fontconfig
@@ -130,7 +130,7 @@ RUN mkdir -p /i &&\
     tar xvf pixman-${PIXMAN_VERSION}.tar.gz &&\
     cd pixman-${PIXMAN_VERSION} &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
-    emmake make -j8 &&\
+    emmake make -j2 &&\
     emmake make install
 
 # libffi
@@ -144,7 +144,7 @@ RUN mkdir -p /i &&\
     autoreconf -fiv &&\
     sed -i 's/ -fexceptions//g' configure &&\
     emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs --disable-docs &&\
-    emmake make -j8 &&\
+    emmake make -j2 &&\
     emmake make install
 
 # glib
@@ -179,7 +179,7 @@ RUN mkdir -p /i &&\
         png_CFLAGS="$(emmake pkg-config --cflags libpng)" png_LIBS="$(emmake pkg-config --libs libpng)" \
         pixman_CFLAGS="$(emmake pkg-config --cflags pixman-1)" pixman_LIBS="$(emmake pkg-config --libs pixman-1)" \
         CFLAGS="$(emmake pkg-config --cflags zlib) -DCAIRO_NO_MUTEX=1" LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
-    emmake make -j8 &&\
+    emmake make -j2 &&\
     emmake make install
 
 # harfbuzz
@@ -227,7 +227,7 @@ RUN mkdir -p /i &&\
     tar xvf libxml2-${XML_VERSION}.tar.xz &&\
     cd libxml2-${XML_VERSION} &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --without-python &&\
-    emmake make -j8 &&\
+    emmake make -j2 &&\
     emmake make install
 
 # shared-mime-info
@@ -273,7 +273,7 @@ RUN mkdir -p /i &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-dependency-tracking --disable-shared --enable-static \
         --disable-gtk-doc --disable-installed-tests --disable-always-build-tests --disable-pixbuf-loader --disable-introspection &&\
     sed -i "s|bin_SCRIPTS = rsvg-convert\$(EXEEXT)||g" Makefile &&\
-    emmake make -j8 &&\
+    emmake make -j2 &&\
     emmake make install
 
 # WebP
@@ -286,5 +286,5 @@ RUN mkdir -p /i &&\
     sed -i 's|examples/Makefile||g' configure &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared --enable-static \
         --disable-png --disable-libwebpdecoder &&\
-    emmake make -j8 &&\
+    emmake make -j2 &&\
     emmake make install
