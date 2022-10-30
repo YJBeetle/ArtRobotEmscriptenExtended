@@ -24,7 +24,7 @@ ENV RSVG_VERSION=2.55.1
 
 # APT
 RUN apt update &&\
-    apt install -y python3 cargo pkg-config libtool ninja-build gperf libglib2.0-dev-bin gettext &&\
+    apt install -y python3 cargo pkg-config libtool ninja-build gperf libglib2.0-dev-bin gettext libxml2-utils &&\
     python3 -m pip install meson
 
 # meson
@@ -230,7 +230,7 @@ RUN mkdir -p /i &&\
     emmake make install
 
 # shared-mime-info
-# 需要 gettext
+# 需要 gettext libxml2-utils
 RUN mkdir -p /i &&\
     cd /i &&\
     wget https://gitlab.freedesktop.org/xdg/shared-mime-info/-/archive/${SHARED_MIME_INFO_VERSION}/shared-mime-info-${SHARED_MIME_INFO_VERSION}.tar.bz2 &&\
