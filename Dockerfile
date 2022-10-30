@@ -140,9 +140,9 @@ RUN mkdir -p /i &&\
     tar xvf cairo-${CAIRO_VERSION}.tar.xz &&\
     cd cairo-${CAIRO_VERSION} &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared -without-x \
-        --disable-xlib --disable-xlib-xrender --disable-directfb --disable-win32 --disable-script \
+        --disable-xlib --disable-xlib-xrender --disable-directfb --disable-win32 --enable-script \
         --enable-pdf --enable-ps --enable-svg --enable-png \
-        --disable-interpreter --disable-xlib-xcb --disable-xcb --disable-xcb-shm \
+        --enable-interpreter --disable-xlib-xcb --disable-xcb --disable-xcb-shm \
         --enable-ft --enable-fc \
         ax_cv_c_float_words_bigendian=no ac_cv_lib_z_compress=yes \
         FREETYPE_CFLAGS="$(emmake pkg-config --cflags freetype2)" FREETYPE_LIBS="$(emmake pkg-config --libs freetype2)" \
