@@ -21,6 +21,7 @@ ENV XML_VERSION=2.10.3
 ENV SHARED_MIME_INFO_VERSION=2.2
 ENV GDK_PIXBUF_VERSION=2.42.9
 ENV RSVG_VERSION=2.55.1
+ENV WEBP_VERSION=1.2.4
 
 # APT
 RUN apt update &&\
@@ -272,5 +273,18 @@ RUN mkdir -p /i &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-dependency-tracking --disable-shared --enable-static \
         --disable-gtk-doc --disable-installed-tests --disable-always-build-tests --disable-pixbuf-loader --disable-introspection &&\
     sed -i "s|bin_SCRIPTS = rsvg-convert\$(EXEEXT)||g" Makefile &&\
+    emmake make -j8 &&\
+    emmake make install
+
+# WebP
+RUN mkdir -p /i &&\
+    cd /i &&\
+    wget https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz &&\
+    tar xvf libwebp-${WEBP_VERSION}.tar.gz &&\
+    cd libwebp-${WEBP_VERSION} &&\
+    sed -i 's|    "examples/Makefile") CONFIG_FILES="\$CONFIG_FILES examples/Makefile" ;;||g' configure &&\
+    sed -i 's|examples/Makefile||g' configure &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared --enable-static \
+        --disable-png --disable-libwebpdecoder &&\
     emmake make -j8 &&\
     emmake make install
