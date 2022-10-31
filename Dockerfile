@@ -142,10 +142,10 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://www.cairographics.org/releases/pixman-${PIXMAN_VERSION}.tar.gz &&\
     tar xvf pixman-${PIXMAN_VERSION}.tar.gz &&\
     cd pixman-${PIXMAN_VERSION} &&\
-    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
-        LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
-    emmake make -j2 &&\
-    emmake make install &&\
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+        -Dtests=disabled &&\
+    meson compile -C build &&\
+    meson install -C build &&\
     cd .. && rm -rf pixman-${PIXMAN_VERSION}.tar.gz pixman-${PIXMAN_VERSION}
 
 # libffi
