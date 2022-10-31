@@ -307,3 +307,6 @@ RUN mkdir -p /i &&\
     emmake make -j2 &&\
     emmake make install &&\
     cd .. && rm -rf libwebp-${WEBP_VERSION}.tar.gz libwebp-${WEBP_VERSION}
+
+# clean meson
+RUN rm /i/emscripten.txt
