@@ -276,11 +276,18 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/librsvg/${RSVG_VERSION%.*}/librsvg-${RSVG_VERSION}.tar.xz &&\
     tar xvf librsvg-${RSVG_VERSION}.tar.xz &&\
     cd librsvg-${RSVG_VERSION} &&\
+    apt remove rustc -y &&\
+    curl https://sh.rustup.rs -sSf | sh -s -- -y --target wasm32-unknown-emscripten &&\
+    source "$HOME/.cargo/env" &&\
     emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
-        --disable-gtk-doc --disable-installed-tests --disable-always-build-tests --disable-pixbuf-loader --disable-introspection &&\
+        --disable-gtk-doc --disable-installed-tests --disable-always-build-tests --disable-pixbuf-loader --disable-introspection \
+        RUST_TARGET=wasm32-unknown-emscripten &&\
+    sed -i "s|#CARGO_TARGET_ARGS = --target=\$(RUST_TARGET)|CARGO_TARGET_ARGS = --target=\$(RUST_TARGET)|g" Makefile &&\
+    sed -i "s|RUST_TARGET_SUBDIR = release|RUST_TARGET_SUBDIR = wasm32-unknown-emscripten/release|g" Makefile &&\
     sed -i "s|bin_SCRIPTS = rsvg-convert\$(EXEEXT)||g" Makefile &&\
     emmake make -j2 &&\
     emmake make install &&\
+    rustup self uninstall -y &&\
     cd .. && rm -rf librsvg-${RSVG_VERSION}.tar.xz librsvg-${RSVG_VERSION}
 
 # WebP
