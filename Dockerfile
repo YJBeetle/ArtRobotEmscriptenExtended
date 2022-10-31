@@ -26,6 +26,7 @@ ENV WEBP_VERSION=1.2.4
 # APT
 RUN apt update &&\
     apt install -y python3 cargo pkg-config libtool ninja-build gperf libglib2.0-dev-bin gettext libxml2-utils &&\
+    rm -rf /var/lib/apt/lists/* &&\
     python3 -m pip install meson
 
 # meson
