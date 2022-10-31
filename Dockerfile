@@ -164,6 +164,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
         --force-fallback-for=gvdb -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled \
         -Dtests=false -Dglib_assert=false -Dglib_checks=false &&\
     meson install -C build &&\
+    ln -s /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/gio-2.0.pc /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/gio-unix-2.0.pc &&\
     cd .. && rm -rf glib-${GLIB_VERSION}.tar.xz glib-${GLIB_VERSION}
 
 # cairo
@@ -275,7 +276,6 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/librsvg/${RSVG_VERSION%.*}/librsvg-${RSVG_VERSION}.tar.xz &&\
     tar xvf librsvg-${RSVG_VERSION}.tar.xz &&\
     cd librsvg-${RSVG_VERSION} &&\
-    ln -s /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/gio-2.0.pc /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/gio-unix-2.0.pc &&\
     emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
         --disable-gtk-doc --disable-installed-tests --disable-always-build-tests --disable-pixbuf-loader --disable-introspection &&\
     sed -i "s|bin_SCRIPTS = rsvg-convert\$(EXEEXT)||g" Makefile &&\
