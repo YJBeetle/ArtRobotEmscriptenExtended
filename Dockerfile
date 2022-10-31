@@ -107,7 +107,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     tar xvf expat-${EXPAT_VERSION}.tar.xz &&\
     cd expat-${EXPAT_VERSION} &&\
     emmake ./buildconf.sh --force &&\
-    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
+    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking &&\
     emmake make -j2 &&\
     emmake make install &&\
     cd .. && rm -rf expat-${EXPAT_VERSION}.tar.xz expat-${EXPAT_VERSION}
@@ -131,7 +131,8 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://www.cairographics.org/releases/pixman-${PIXMAN_VERSION}.tar.gz &&\
     tar xvf pixman-${PIXMAN_VERSION}.tar.gz &&\
     cd pixman-${PIXMAN_VERSION} &&\
-    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
+    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
+        LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
     emmake make -j2 &&\
     emmake make install &&\
     cd .. && rm -rf pixman-${PIXMAN_VERSION}.tar.gz pixman-${PIXMAN_VERSION}
@@ -145,7 +146,8 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     curl -Ls https://github.com/libffi/libffi/compare/v${IFFI_VERSION}...kleisauke:wasm-vips.patch | patch -p1 &&\
     autoreconf -fiv &&\
     sed -i 's/ -fexceptions//g' configure &&\
-    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs --disable-docs &&\
+    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
+        --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs --disable-docs &&\
     emmake make -j2 &&\
     emmake make install &&\
     cd .. && rm -rf libffi-${IFFI_VERSION}.tar.gz libffi-${IFFI_VERSION}
@@ -170,7 +172,8 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://www.cairographics.org/releases/cairo-${CAIRO_VERSION}.tar.xz &&\
     tar xvf cairo-${CAIRO_VERSION}.tar.xz &&\
     cd cairo-${CAIRO_VERSION} &&\
-    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared -without-x \
+    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
+        -without-x \
         --disable-xlib --disable-xlib-xrender --disable-directfb --disable-win32 --enable-script \
         --enable-pdf --enable-ps --enable-svg --enable-png \
         --enable-interpreter --disable-xlib-xcb --disable-xcb --disable-xcb-shm \
@@ -228,7 +231,8 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/libxml2/${XML_VERSION%.*}/libxml2-${XML_VERSION}.tar.xz &&\
     tar xvf libxml2-${XML_VERSION}.tar.xz &&\
     cd libxml2-${XML_VERSION} &&\
-    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared --enable-static --without-python &&\
+    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
+        --without-python &&\
     emmake make -j2 &&\
     emmake make install &&\
     cd .. && rm -rf libxml2-${XML_VERSION}.tar.xz libxml2-${XML_VERSION}
@@ -272,7 +276,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     tar xvf librsvg-${RSVG_VERSION}.tar.xz &&\
     cd librsvg-${RSVG_VERSION} &&\
     ln -s /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/gio-2.0.pc /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/gio-unix-2.0.pc &&\
-    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-dependency-tracking --disable-shared --enable-static \
+    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
         --disable-gtk-doc --disable-installed-tests --disable-always-build-tests --disable-pixbuf-loader --disable-introspection &&\
     sed -i "s|bin_SCRIPTS = rsvg-convert\$(EXEEXT)||g" Makefile &&\
     emmake make -j2 &&\
@@ -284,7 +288,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz &&\
     tar xvf libwebp-${WEBP_VERSION}.tar.gz &&\
     cd libwebp-${WEBP_VERSION} &&\
-    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared --enable-static \
+    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
         --disable-png --disable-libwebpdecoder --disable-libwebpdemux --disable-libwebpmux --disable-sdl &&\
     emmake make -j2 &&\
     emmake make install &&\
