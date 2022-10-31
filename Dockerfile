@@ -191,11 +191,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
         --enable-interpreter --disable-xlib-xcb --disable-xcb --disable-xcb-shm \
         --enable-ft --enable-fc \
         ax_cv_c_float_words_bigendian=no ac_cv_lib_z_compress=yes \
-        FREETYPE_CFLAGS="$(emmake pkg-config --cflags freetype2)" FREETYPE_LIBS="$(emmake pkg-config --libs freetype2)" \
-        FONTCONFIG_CFLAGS="$(emmake pkg-config --cflags fontconfig)" FONTCONFIG_LIBS="$(emmake pkg-config --libs fontconfig)" \
-        png_CFLAGS="$(emmake pkg-config --cflags libpng)" png_LIBS="$(emmake pkg-config --libs libpng)" \
-        pixman_CFLAGS="$(emmake pkg-config --cflags pixman-1)" pixman_LIBS="$(emmake pkg-config --libs pixman-1)" \
-        CFLAGS="$(emmake pkg-config --cflags zlib) -DCAIRO_NO_MUTEX=1" LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
+        CFLAGS="-DCAIRO_NO_MUTEX=1" &&\
     emmake make -j2 &&\
     emmake make install &&\
     cd .. && rm -rf cairo-${CAIRO_VERSION}.tar.xz cairo-${CAIRO_VERSION}
