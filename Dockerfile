@@ -282,9 +282,7 @@ RUN mkdir -p /i &&\
     wget https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz &&\
     tar xvf libwebp-${WEBP_VERSION}.tar.gz &&\
     cd libwebp-${WEBP_VERSION} &&\
-    sed -i 's|    "examples/Makefile") CONFIG_FILES="\$CONFIG_FILES examples/Makefile" ;;||g' configure &&\
-    sed -i 's|examples/Makefile||g' configure &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared --enable-static \
-        --disable-png --disable-libwebpdecoder &&\
+        --disable-png --disable-libwebpdecoder --disable-libwebpdemux --disable-libwebpmux --disable-sdl &&\
     emmake make -j2 &&\
     emmake make install
