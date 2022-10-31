@@ -2,6 +2,8 @@ FROM emscripten/emsdk:latest
 
 SHELL ["/bin/bash", "-c"]
 
+ENV BUILD_DIR=/i
+
 ENV OPENCV_VERSION=4.6.0
 ENV JPEG_VERSION=2.1.4
 ENV ZLIB_VERSION=1.2.13
@@ -30,10 +32,10 @@ RUN apt update &&\
     python3 -m pip install meson
 
 # meson
-ADD emscripten.txt /i/emscripten.txt
+ADD emscripten.txt ${BUILD_DIR}/emscripten.txt
 
 # opencv
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/opencv/opencv/archive/refs/tags/${OPENCV_VERSION}.tar.gz -O opencv-${OPENCV_VERSION}.tar.gz &&\
     tar xvf opencv-${OPENCV_VERSION}.tar.gz &&\
     cd opencv-${OPENCV_VERSION} &&\
@@ -43,7 +45,7 @@ RUN mkdir -p /i && cd /i &&\
     cd .. && rm -rf opencv-${OPENCV_VERSION}.tar.gz opencv-${OPENCV_VERSION}
 
 # libjpeg
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.sourceforge.net/libjpeg-turbo/libjpeg-turbo-${JPEG_VERSION}.tar.gz &&\
     tar xvf libjpeg-turbo-${JPEG_VERSION}.tar.gz &&\
     cd libjpeg-turbo-${JPEG_VERSION} &&\
@@ -53,7 +55,7 @@ RUN mkdir -p /i && cd /i &&\
     cd .. && rm -rf libjpeg-turbo-${JPEG_VERSION}.tar.gz libjpeg-turbo-${JPEG_VERSION}
 
 # zlib
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/madler/zlib/releases/download/v${ZLIB_VERSION}/zlib-${ZLIB_VERSION}.tar.xz &&\
     tar xvf zlib-${ZLIB_VERSION}.tar.xz &&\
     cd zlib-${ZLIB_VERSION} &&\
@@ -66,7 +68,7 @@ RUN mkdir -p /i && cd /i &&\
 
 # libpng
 # 需要 zlib
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.sourceforge.net/libpng/libpng-${PNG_VERSION}.tar.xz &&\
     tar xvf libpng-${PNG_VERSION}.tar.xz &&\
     cd libpng-${PNG_VERSION} &&\
@@ -76,7 +78,7 @@ RUN mkdir -p /i && cd /i &&\
     cd .. && rm -rf libpng-${PNG_VERSION}.tar.xz libpng-${PNG_VERSION}
 
 # bzip2
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz &&\
     tar xvf bzip2-${BZIP2_VERSION}.tar.gz &&\
     cd bzip2-${BZIP2_VERSION} &&\
@@ -90,7 +92,7 @@ RUN mkdir -p /i && cd /i &&\
 
 # freetype
 # 需要 libpng zlib bzip2
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.sourceforge.net/freetype/freetype-${FREETYPE_VERSION}.tar.xz &&\
     tar xvf freetype-${FREETYPE_VERSION}.tar.xz &&\
     cd freetype-${FREETYPE_VERSION} &&\
@@ -100,7 +102,7 @@ RUN mkdir -p /i && cd /i &&\
     cd .. && rm -rf freetype-${FREETYPE_VERSION}.tar.xz freetype-${FREETYPE_VERSION}
 
 # expat
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/libexpat/libexpat/releases/download/R_${EXPAT_VERSION//./_}/expat-${EXPAT_VERSION}.tar.xz &&\
     tar xvf expat-${EXPAT_VERSION}.tar.xz &&\
     cd expat-${EXPAT_VERSION} &&\
@@ -112,7 +114,7 @@ RUN mkdir -p /i && cd /i &&\
 
 # fontconfig
 # 需要 freetype expat
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://www.freedesktop.org/software/fontconfig/release/fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
     tar xvf fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
     cd fontconfig-${FONTCONFIG_VERSION} &&\
@@ -125,7 +127,7 @@ RUN mkdir -p /i && cd /i &&\
 
 # pixman
 # 需要 zlib
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://www.cairographics.org/releases/pixman-${PIXMAN_VERSION}.tar.gz &&\
     tar xvf pixman-${PIXMAN_VERSION}.tar.gz &&\
     cd pixman-${PIXMAN_VERSION} &&\
@@ -136,7 +138,7 @@ RUN mkdir -p /i && cd /i &&\
 
 # libffi
 # see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L203
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/libffi/libffi/releases/download/v${IFFI_VERSION}/libffi-${IFFI_VERSION}.tar.gz &&\
     tar xvf libffi-${IFFI_VERSION}.tar.gz &&\
     cd libffi-${IFFI_VERSION} &&\
@@ -151,7 +153,7 @@ RUN mkdir -p /i && cd /i &&\
 # glib
 # 需要 libffi
 # see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L220
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/glib/${GLIB_VERSION%.*}/glib-${GLIB_VERSION}.tar.xz &&\
     tar xvf glib-${GLIB_VERSION}.tar.xz &&\
     cd glib-${GLIB_VERSION} &&\
@@ -164,7 +166,7 @@ RUN mkdir -p /i && cd /i &&\
 
 # cairo
 # 需要 libpng pixman freetype zlib glib
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://www.cairographics.org/releases/cairo-${CAIRO_VERSION}.tar.xz &&\
     tar xvf cairo-${CAIRO_VERSION}.tar.xz &&\
     cd cairo-${CAIRO_VERSION} &&\
@@ -184,7 +186,7 @@ RUN mkdir -p /i && cd /i &&\
     cd .. && rm -rf cairo-${CAIRO_VERSION}.tar.xz cairo-${CAIRO_VERSION}
 
 # harfbuzz
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/harfbuzz/harfbuzz/releases/download/${HARFBUZZ_VERSION}/harfbuzz-${HARFBUZZ_VERSION}.tar.xz &&\
     tar xvf harfbuzz-${HARFBUZZ_VERSION}.tar.xz &&\
     cd harfbuzz-${HARFBUZZ_VERSION} &&\
@@ -195,7 +197,7 @@ RUN mkdir -p /i && cd /i &&\
     cd .. && rm -rf harfbuzz-${HARFBUZZ_VERSION}.tar.xz harfbuzz-${HARFBUZZ_VERSION}
 
 # fribidi
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/fribidi/fribidi/releases/download/v1.0.12/fribidi-${FRIBIDI_VERSION}.tar.xz &&\
     tar xvf fribidi-${FRIBIDI_VERSION}.tar.xz &&\
     cd fribidi-${FRIBIDI_VERSION} &&\
@@ -207,7 +209,7 @@ RUN mkdir -p /i && cd /i &&\
 
 # Pango
 # 需要 harfbuzz fribidi fontconfig freetype glib cairo libglib2.0-dev-bin
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/pango/1.50/pango-${PANGO_VERSION}.tar.xz &&\
     tar xvf pango-${PANGO_VERSION}.tar.xz &&\
     cd pango-${PANGO_VERSION} &&\
@@ -222,7 +224,7 @@ RUN mkdir -p /i && cd /i &&\
     cd .. && rm -rf pango-${PANGO_VERSION}.tar.xz pango-${PANGO_VERSION}
 
 # libxml2
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/libxml2/${XML_VERSION%.*}/libxml2-${XML_VERSION}.tar.xz &&\
     tar xvf libxml2-${XML_VERSION}.tar.xz &&\
     cd libxml2-${XML_VERSION} &&\
@@ -233,7 +235,7 @@ RUN mkdir -p /i && cd /i &&\
 
 # shared-mime-info
 # 需要 gettext libxml2-utils
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://gitlab.freedesktop.org/xdg/shared-mime-info/-/archive/${SHARED_MIME_INFO_VERSION}/shared-mime-info-${SHARED_MIME_INFO_VERSION}.tar.bz2 &&\
     tar xvf shared-mime-info-${SHARED_MIME_INFO_VERSION}.tar.bz2 &&\
     cd shared-mime-info-${SHARED_MIME_INFO_VERSION} &&\
@@ -250,7 +252,7 @@ RUN mkdir -p /i && cd /i &&\
 
 # gdk-pixbuf
 # 需要 shared-mime-info
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/gdk-pixbuf/${GDK_PIXBUF_VERSION%.*}/gdk-pixbuf-${GDK_PIXBUF_VERSION}.tar.xz &&\
     tar xvf gdk-pixbuf-${GDK_PIXBUF_VERSION}.tar.xz &&\
     cd gdk-pixbuf-${GDK_PIXBUF_VERSION} &&\
@@ -265,7 +267,7 @@ RUN mkdir -p /i && cd /i &&\
 
 # rsvg
 # 需要 libxml2 gdk-pixbuf
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/librsvg/${RSVG_VERSION%.*}/librsvg-${RSVG_VERSION}.tar.xz &&\
     tar xvf librsvg-${RSVG_VERSION}.tar.xz &&\
     cd librsvg-${RSVG_VERSION} &&\
@@ -278,7 +280,7 @@ RUN mkdir -p /i && cd /i &&\
     cd .. && rm -rf librsvg-${RSVG_VERSION}.tar.xz librsvg-${RSVG_VERSION}
 
 # WebP
-RUN mkdir -p /i && cd /i &&\
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz &&\
     tar xvf libwebp-${WEBP_VERSION}.tar.gz &&\
     cd libwebp-${WEBP_VERSION} &&\
@@ -289,4 +291,4 @@ RUN mkdir -p /i && cd /i &&\
     cd .. && rm -rf libwebp-${WEBP_VERSION}.tar.gz libwebp-${WEBP_VERSION}
 
 # clean meson
-RUN rm /i/emscripten.txt
+RUN rm ${BUILD_DIR}/emscripten.txt
