@@ -119,7 +119,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     tar xvf fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
     cd fontconfig-${FONTCONFIG_VERSION} &&\
     sed -i "s|error('FIXME: implement cc.preprocess')|cpp += \['-E', '-P'\]|g" src/meson.build &&\
-    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dtests=disabled -Ddoc=disabled -Dtools=disabled &&\
     meson compile -C build &&\
     meson install -C build &&\
@@ -158,7 +158,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     tar xvf glib-${GLIB_VERSION}.tar.xz &&\
     cd glib-${GLIB_VERSION} &&\
     curl -Ls https://github.com/GNOME/glib/compare/${GLIB_VERSION}...kleisauke:wasm-vips.patch | patch -p1 &&\
-    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         --force-fallback-for=gvdb -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled \
         -Dtests=false -Dglib_assert=false -Dglib_checks=false &&\
     meson install -C build &&\
@@ -190,7 +190,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/harfbuzz/harfbuzz/releases/download/${HARFBUZZ_VERSION}/harfbuzz-${HARFBUZZ_VERSION}.tar.xz &&\
     tar xvf harfbuzz-${HARFBUZZ_VERSION}.tar.xz &&\
     cd harfbuzz-${HARFBUZZ_VERSION} &&\
-    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dglib=disabled -Dgobject=disabled -Dcairo=enabled -Dfreetype=enabled -Ddocs=disabled -Dtests=disabled &&\
     meson compile -C build &&\
     meson install -C build &&\
@@ -201,7 +201,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/fribidi/fribidi/releases/download/v1.0.12/fribidi-${FRIBIDI_VERSION}.tar.xz &&\
     tar xvf fribidi-${FRIBIDI_VERSION}.tar.xz &&\
     cd fribidi-${FRIBIDI_VERSION} &&\
-    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dtests=false -Ddocs=false &&\
     meson compile -C build &&\
     meson install -C build &&\
@@ -217,7 +217,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     sed -i "s|subdir('tests')||g" meson.build &&\
     sed -i "s|subdir('utils')||g" meson.build &&\
     sed -i "s|subdir('tools')||g" meson.build &&\
-    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dintrospection=disabled -Dinstall-tests=false &&\
     meson compile -C build &&\
     meson install -C build &&\
@@ -243,7 +243,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     cd xdgmime/src &&\
     make &&\
     cd ../../ &&\
-    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dbuild-tools=false &&\
     meson compile -C build &&\
     meson install -C build &&\
@@ -259,7 +259,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     sed -i "s|\[ 'gdk-pixbuf-csource' \],||g" gdk-pixbuf/meson.build &&\
     sed -i "s|\[ 'gdk-pixbuf-pixdata' \],||g" gdk-pixbuf/meson.build &&\
     sed -i "s|\[ 'gdk-pixbuf-query-loaders', \[ 'queryloaders.c' \] \],||g" gdk-pixbuf/meson.build &&\
-    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
+    meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dman=false -Dtests=false -Dbuiltin_loaders=none &&\
     meson compile -C build &&\
     meson install -C build &&\
