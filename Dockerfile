@@ -77,6 +77,17 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     cmake --install build &&\
     cd .. && rm -rf libpng-${PNG_VERSION}.tar.xz libpng-${PNG_VERSION}
 
+# WebP
+RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
+    wget https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz &&\
+    tar xvf libwebp-${WEBP_VERSION}.tar.gz &&\
+    cd libwebp-${WEBP_VERSION} &&\
+    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
+        --disable-png --disable-libwebpdecoder --disable-libwebpdemux --disable-libwebpmux --disable-sdl &&\
+    emmake make -j2 &&\
+    emmake make install &&\
+    cd .. && rm -rf libwebp-${WEBP_VERSION}.tar.gz libwebp-${WEBP_VERSION}
+
 # bzip2
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz &&\
@@ -289,17 +300,6 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     emmake make install &&\
     rustup self uninstall -y &&\
     cd .. && rm -rf librsvg-${RSVG_VERSION}.tar.xz librsvg-${RSVG_VERSION}
-
-# WebP
-RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
-    wget https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz &&\
-    tar xvf libwebp-${WEBP_VERSION}.tar.gz &&\
-    cd libwebp-${WEBP_VERSION} &&\
-    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
-        --disable-png --disable-libwebpdecoder --disable-libwebpdemux --disable-libwebpmux --disable-sdl &&\
-    emmake make -j2 &&\
-    emmake make install &&\
-    cd .. && rm -rf libwebp-${WEBP_VERSION}.tar.gz libwebp-${WEBP_VERSION}
 
 # clean meson
 RUN rm ${BUILD_DIR}/emscripten.txt
