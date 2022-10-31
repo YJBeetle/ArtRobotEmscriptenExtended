@@ -40,7 +40,8 @@ RUN mkdir -p /i &&\
     cd opencv-${OPENCV_VERSION} &&\
     emmake python3 ./platforms/js/build_js.py --build_wasm $(emcmake echo | awk -v RS=' ' -v ORS=' ' '{print "--cmake_option=\""$1"\""}') --cmake_option="-DCMAKE_INSTALL_PREFIX=/emsdk/upstream/emscripten/cache/sysroot" build &&\
     cmake --build build -j2 &&\
-    cmake --install build
+    cmake --install build &&\
+    cd .. && rm -rf opencv-${OPENCV_VERSION}.tar.gz opencv-${OPENCV_VERSION}
 
 # libjpeg
 RUN mkdir -p /i &&\
@@ -50,7 +51,8 @@ RUN mkdir -p /i &&\
     cd libjpeg-turbo-${JPEG_VERSION} &&\
     emcmake cmake -B build -DCMAKE_INSTALL_PREFIX=/emsdk/upstream/emscripten/cache/sysroot &&\
     cmake --build build -j2 &&\
-    cmake --install build
+    cmake --install build &&\
+    cd .. && rm -rf libjpeg-turbo-${JPEG_VERSION}.tar.gz libjpeg-turbo-${JPEG_VERSION}
 
 # zlib
 RUN mkdir -p /i &&\
@@ -62,7 +64,8 @@ RUN mkdir -p /i &&\
     sed -i "s|share/pkgconfig|lib/pkgconfig|g" CMakeLists.txt &&\
     emcmake cmake -B build &&\
     cmake --build build &&\
-    cmake --install build
+    cmake --install build &&\
+    cd .. && rm -rf zlib-${ZLIB_VERSION}.tar.xz zlib-${ZLIB_VERSION}
 
 # libpng
 # 需要 zlib
@@ -73,7 +76,8 @@ RUN mkdir -p /i &&\
     cd libpng-${PNG_VERSION} &&\
     emcmake cmake -B build -DPNG_SHARED=no -DPNG_STATIC=yes -DPNG_FRAMEWORK=no -DM_LIBRARY="" &&\
     cmake --build build -j2 &&\
-    cmake --install build
+    cmake --install build &&\
+    cd .. && rm -rf libpng-${PNG_VERSION}.tar.xz libpng-${PNG_VERSION}
 
 # bzip2
 RUN mkdir -p /i &&\
@@ -86,7 +90,8 @@ RUN mkdir -p /i &&\
     sed -i "s|RANLIB=ranlib|RANLIB=/emsdk/upstream/emscripten/emranlib|g" Makefile &&\
     sed -i "s|CC=gcc|CC=/emsdk/upstream/emscripten/emcc|g" Makefile-libbz2_so &&\
     emmake make bzip2 -j2 &&\
-    emmake make install PREFIX=/emsdk/upstream/emscripten/cache/sysroot
+    emmake make install PREFIX=/emsdk/upstream/emscripten/cache/sysroot &&\
+    cd .. && rm -rf bzip2-${BZIP2_VERSION}.tar.gz bzip2-${BZIP2_VERSION}
 
 # freetype
 # 需要 libpng zlib bzip2
@@ -97,7 +102,8 @@ RUN mkdir -p /i &&\
     cd freetype-${FREETYPE_VERSION} &&\
     emcmake cmake -B build &&\
     cmake --build build -j2 &&\
-    cmake --install build
+    cmake --install build &&\
+    cd .. && rm -rf freetype-${FREETYPE_VERSION}.tar.xz freetype-${FREETYPE_VERSION}
 
 # expat
 RUN mkdir -p /i &&\
@@ -108,7 +114,8 @@ RUN mkdir -p /i &&\
     emmake ./buildconf.sh --force &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared &&\
     emmake make -j2 &&\
-    emmake make install
+    emmake make install &&\
+    cd .. && rm -rf expat-${EXPAT_VERSION}.tar.xz expat-${EXPAT_VERSION}
 
 # fontconfig
 # 需要 freetype expat
@@ -121,7 +128,8 @@ RUN mkdir -p /i &&\
     meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dtests=disabled -Ddoc=disabled -Dtools=disabled &&\
     meson compile -C build &&\
-    meson install -C build
+    meson install -C build &&\
+    cd .. && rm -rf fontconfig-${FONTCONFIG_VERSION}.tar.xz fontconfig-${FONTCONFIG_VERSION}
 
 # pixman
 # 需要 zlib
@@ -132,7 +140,8 @@ RUN mkdir -p /i &&\
     cd pixman-${PIXMAN_VERSION} &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
     emmake make -j2 &&\
-    emmake make install
+    emmake make install &&\
+    cd .. && rm -rf pixman-${PIXMAN_VERSION}.tar.gz pixman-${PIXMAN_VERSION}
 
 # libffi
 # see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L203
@@ -146,7 +155,8 @@ RUN mkdir -p /i &&\
     sed -i 's/ -fexceptions//g' configure &&\
     emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking --disable-builddir --disable-multi-os-directory --disable-raw-api --disable-structs --disable-docs &&\
     emmake make -j2 &&\
-    emmake make install
+    emmake make install &&\
+    cd .. && rm -rf libffi-${IFFI_VERSION}.tar.gz libffi-${IFFI_VERSION}
 
 # glib
 # 需要 libffi
@@ -160,7 +170,8 @@ RUN mkdir -p /i &&\
     meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         --force-fallback-for=gvdb -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled \
         -Dtests=false -Dglib_assert=false -Dglib_checks=false &&\
-    meson install -C build
+    meson install -C build &&\
+    cd .. && rm -rf glib-${GLIB_VERSION}.tar.xz glib-${GLIB_VERSION}
 
 # cairo
 # 需要 libpng pixman freetype zlib glib
@@ -181,7 +192,8 @@ RUN mkdir -p /i &&\
         pixman_CFLAGS="$(emmake pkg-config --cflags pixman-1)" pixman_LIBS="$(emmake pkg-config --libs pixman-1)" \
         CFLAGS="$(emmake pkg-config --cflags zlib) -DCAIRO_NO_MUTEX=1" LDFLAGS="$(emmake pkg-config --libs zlib)" &&\
     emmake make -j2 &&\
-    emmake make install
+    emmake make install &&\
+    cd .. && rm -rf cairo-${CAIRO_VERSION}.tar.xz cairo-${CAIRO_VERSION}
 
 # harfbuzz
 RUN mkdir -p /i &&\
@@ -192,7 +204,8 @@ RUN mkdir -p /i &&\
     meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dglib=disabled -Dgobject=disabled -Dcairo=enabled -Dfreetype=enabled -Ddocs=disabled -Dtests=disabled &&\
     meson compile -C build &&\
-    meson install -C build
+    meson install -C build &&\
+    cd .. && rm -rf harfbuzz-${HARFBUZZ_VERSION}.tar.xz harfbuzz-${HARFBUZZ_VERSION}
 
 # fribidi
 RUN mkdir -p /i &&\
@@ -203,7 +216,8 @@ RUN mkdir -p /i &&\
     meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dtests=false -Ddocs=false &&\
     meson compile -C build &&\
-    meson install -C build
+    meson install -C build &&\
+    cd .. && rm -rf fribidi-${FRIBIDI_VERSION}.tar.xz fribidi-${FRIBIDI_VERSION}
 
 # Pango
 # 需要 harfbuzz fribidi fontconfig freetype glib cairo libglib2.0-dev-bin
@@ -219,7 +233,8 @@ RUN mkdir -p /i &&\
     meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dintrospection=disabled -Dinstall-tests=false &&\
     meson compile -C build &&\
-    meson install -C build
+    meson install -C build &&\
+    cd .. && rm -rf pango-${PANGO_VERSION}.tar.xz pango-${PANGO_VERSION}
 
 # libxml2
 RUN mkdir -p /i &&\
@@ -229,7 +244,8 @@ RUN mkdir -p /i &&\
     cd libxml2-${XML_VERSION} &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --without-python &&\
     emmake make -j2 &&\
-    emmake make install
+    emmake make install &&\
+    cd .. && rm -rf libxml2-${XML_VERSION}.tar.xz libxml2-${XML_VERSION}
 
 # shared-mime-info
 # 需要 gettext libxml2-utils
@@ -246,7 +262,8 @@ RUN mkdir -p /i &&\
         -Dbuild-tools=false &&\
     meson compile -C build &&\
     meson install -C build &&\
-    ln -s /emsdk/upstream/emscripten/cache/sysroot/share/pkgconfig/shared-mime-info.pc /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/shared-mime-info.pc
+    ln -s /emsdk/upstream/emscripten/cache/sysroot/share/pkgconfig/shared-mime-info.pc /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/shared-mime-info.pc &&\
+    cd .. && rm -rf shared-mime-info-${SHARED_MIME_INFO_VERSION}.tar.bz2 shared-mime-info-${SHARED_MIME_INFO_VERSION}
 
 # gdk-pixbuf
 # 需要 shared-mime-info
@@ -261,7 +278,8 @@ RUN mkdir -p /i &&\
     meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot/ --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         -Dman=false -Dtests=false -Dbuiltin_loaders=none &&\
     meson compile -C build &&\
-    meson install -C build
+    meson install -C build &&\
+    cd .. && rm -rf gdk-pixbuf-${GDK_PIXBUF_VERSION}.tar.xz gdk-pixbuf-${GDK_PIXBUF_VERSION}
 
 # rsvg
 # 需要 libxml2 gdk-pixbuf
@@ -275,7 +293,8 @@ RUN mkdir -p /i &&\
         --disable-gtk-doc --disable-installed-tests --disable-always-build-tests --disable-pixbuf-loader --disable-introspection &&\
     sed -i "s|bin_SCRIPTS = rsvg-convert\$(EXEEXT)||g" Makefile &&\
     emmake make -j2 &&\
-    emmake make install
+    emmake make install &&\
+    cd .. && rm -rf librsvg-${RSVG_VERSION}.tar.xz librsvg-${RSVG_VERSION}
 
 # WebP
 RUN mkdir -p /i &&\
@@ -286,4 +305,5 @@ RUN mkdir -p /i &&\
     emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared --enable-static \
         --disable-png --disable-libwebpdecoder --disable-libwebpdemux --disable-libwebpmux --disable-sdl &&\
     emmake make -j2 &&\
-    emmake make install
+    emmake make install &&\
+    cd .. && rm -rf libwebp-${WEBP_VERSION}.tar.gz libwebp-${WEBP_VERSION}
