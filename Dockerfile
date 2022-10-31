@@ -228,7 +228,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/libxml2/${XML_VERSION%.*}/libxml2-${XML_VERSION}.tar.xz &&\
     tar xvf libxml2-${XML_VERSION}.tar.xz &&\
     cd libxml2-${XML_VERSION} &&\
-    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --without-python &&\
+    emconfigure ./configure -prefix=/emsdk/upstream/emscripten/cache/sysroot --disable-shared --enable-static --without-python &&\
     emmake make -j2 &&\
     emmake make install &&\
     cd .. && rm -rf libxml2-${XML_VERSION}.tar.xz libxml2-${XML_VERSION}
