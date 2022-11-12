@@ -221,7 +221,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 # Pango
 # 需要 harfbuzz fribidi fontconfig freetype glib cairo libglib2.0-dev-bin
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
-    wget https://download.gnome.org/sources/pango/1.50/pango-${PANGO_VERSION}.tar.xz &&\
+    wget https://download.gnome.org/sources/pango/${PANGO_VERSION%.*}/pango-${PANGO_VERSION}.tar.xz &&\
     tar xvf pango-${PANGO_VERSION}.tar.xz &&\
     cd pango-${PANGO_VERSION} &&\
     sed -i "s|subdir('examples')||g" meson.build &&\
