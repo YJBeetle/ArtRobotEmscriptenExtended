@@ -72,9 +72,11 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.sourceforge.net/libpng/libpng-${PNG_VERSION}.tar.xz &&\
     tar xvf libpng-${PNG_VERSION}.tar.xz &&\
     cd libpng-${PNG_VERSION} &&\
-    emcmake cmake -B build -DPNG_SHARED=no -DPNG_STATIC=yes -DPNG_FRAMEWORK=no -DM_LIBRARY="" &&\
-    cmake --build build -j2 &&\
-    cmake --install build &&\
+    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
+        CFLAGS="-I/emsdk/upstream/emscripten/cache/sysroot/include/ -pthread" \
+        LDFLAGS="-L/emsdk/upstream/emscripten/cache/sysroot/lib -pthread" &&\
+    emmake make -j2 &&\
+    emmake make install &&\
     cd .. && rm -rf libpng-${PNG_VERSION}.tar.xz libpng-${PNG_VERSION}
 
 # WebP
