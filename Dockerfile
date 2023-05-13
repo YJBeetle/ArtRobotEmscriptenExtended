@@ -197,7 +197,9 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
         --enable-interpreter --disable-xlib-xcb --disable-xcb --disable-xcb-shm \
         --enable-ft --enable-fc \
         ax_cv_c_float_words_bigendian=no ac_cv_lib_z_compress=yes \
-        CFLAGS="-DCAIRO_NO_MUTEX=1" &&\
+        CFLAGS="-DCAIRO_NO_MUTEX=1" \
+        FREETYPE_CFLAGS="-I/emsdk/upstream/emscripten/cache/sysroot/include/" \
+        FREETYPE_LIBS="-L/emsdk/upstream/emscripten/cache/sysroot/lib -lbz2" &&\
     emmake make -j2 &&\
     emmake make install &&\
     cd .. && rm -rf cairo-${CAIRO_VERSION}.tar.xz cairo-${CAIRO_VERSION}
