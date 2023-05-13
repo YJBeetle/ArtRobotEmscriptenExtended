@@ -107,9 +107,13 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.sourceforge.net/freetype/freetype-${FREETYPE_VERSION}.tar.xz &&\
     tar xvf freetype-${FREETYPE_VERSION}.tar.xz &&\
     cd freetype-${FREETYPE_VERSION} &&\
-    emcmake cmake -B build &&\
-    cmake --build build -j2 &&\
-    cmake --install build &&\
+    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
+        --with-bzip2 \
+        BZIP2_CFLAGS="-I/emsdk/upstream/emscripten/cache/sysroot/include/" \
+        BZIP2_LIBS="-L/emsdk/upstream/emscripten/cache/sysroot/lib" &&\
+    gcc ./src/tools/apinames.c -o ./objs/apinames &&\
+    emmake make -j2 &&\
+    emmake make install &&\
     cd .. && rm -rf freetype-${FREETYPE_VERSION}.tar.xz freetype-${FREETYPE_VERSION}
 
 # expat
