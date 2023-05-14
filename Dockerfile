@@ -101,6 +101,16 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     sed -i "s|CC=gcc|CC=/emsdk/upstream/emscripten/emcc|g" Makefile-libbz2_so &&\
     emmake make bzip2 -j2 &&\
     emmake make install PREFIX=/emsdk/upstream/emscripten/cache/sysroot &&\
+    echo "
+libdir=/emsdk/upstream/emscripten/cache/sysroot/lib
+includedir=/emsdk/upstream/emscripten/cache/sysroot/include
+
+Name: bzip2
+Description: A file compression library
+Version: 1.0.8
+Libs: -L${libdir} -lbz2
+Cflags: -I${includedir}
+" > /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/bzip2.pc &&\
     cd .. && rm -rf bzip2-${BZIP2_VERSION}.tar.gz bzip2-${BZIP2_VERSION}
 
 # freetype
@@ -110,9 +120,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     tar xvf freetype-${FREETYPE_VERSION}.tar.xz &&\
     cd freetype-${FREETYPE_VERSION} &&\
     emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
-        --with-bzip2 \
-        BZIP2_CFLAGS="-I/emsdk/upstream/emscripten/cache/sysroot/include/" \
-        BZIP2_LIBS="-L/emsdk/upstream/emscripten/cache/sysroot/lib" &&\
+        --with-bzip2 &&\
     gcc ./src/tools/apinames.c -o ./objs/apinames &&\
     emmake make -j2 &&\
     emmake make install &&\
