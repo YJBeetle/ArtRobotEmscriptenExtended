@@ -8,7 +8,6 @@ ENV OPENCV_VERSION=4.6.0
 ENV JPEG_VERSION=2.1.4
 ENV ZLIB_VERSION=1.2.13
 ENV PNG_VERSION=1.6.38
-ENV BZIP2_VERSION=1.0.8
 ENV FREETYPE_VERSION=2.13.0
 ENV EXPAT_VERSION=2.5.0
 ENV FONTCONFIG_VERSION=2.14.1
@@ -90,37 +89,13 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     emmake make install &&\
     cd .. && rm -rf libwebp-${WEBP_VERSION}.tar.gz libwebp-${WEBP_VERSION}
 
-# bzip2
-RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
-    wget https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz &&\
-    tar xvf bzip2-${BZIP2_VERSION}.tar.gz &&\
-    cd bzip2-${BZIP2_VERSION} &&\
-    sed -i "s|CC=gcc|CC=/emsdk/upstream/emscripten/emcc|g" Makefile &&\
-    sed -i "s|AR=ar|AR=/emsdk/upstream/emscripten/emar|g" Makefile &&\
-    sed -i "s|RANLIB=ranlib|RANLIB=/emsdk/upstream/emscripten/emranlib|g" Makefile &&\
-    sed -i "s|CC=gcc|CC=/emsdk/upstream/emscripten/emcc|g" Makefile-libbz2_so &&\
-    emmake make bzip2 -j2 &&\
-    emmake make install PREFIX=/emsdk/upstream/emscripten/cache/sysroot &&\
-    echo "
-libdir=/emsdk/upstream/emscripten/cache/sysroot/lib
-includedir=/emsdk/upstream/emscripten/cache/sysroot/include
-
-Name: bzip2
-Description: A file compression library
-Version: 1.0.8
-Libs: -L${libdir} -lbz2
-Cflags: -I${includedir}
-" > /emsdk/upstream/emscripten/cache/sysroot/lib/pkgconfig/bzip2.pc &&\
-    cd .. && rm -rf bzip2-${BZIP2_VERSION}.tar.gz bzip2-${BZIP2_VERSION}
-
 # freetype
-# 需要 libpng zlib bzip2
+# 需要 libpng zlib
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.sourceforge.net/freetype/freetype-${FREETYPE_VERSION}.tar.xz &&\
     tar xvf freetype-${FREETYPE_VERSION}.tar.xz &&\
     cd freetype-${FREETYPE_VERSION} &&\
-    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking \
-        --with-bzip2 &&\
+    emconfigure ./configure --host=wasm32-unknown-linux --prefix=/emsdk/upstream/emscripten/cache/sysroot --enable-static --disable-shared --disable-dependency-tracking &&\
     gcc ./src/tools/apinames.c -o ./objs/apinames &&\
     emmake make -j2 &&\
     emmake make install &&\
@@ -206,9 +181,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
         --enable-ft --enable-fc \
         --enable-pthread \
         ax_cv_c_float_words_bigendian=no ac_cv_lib_z_compress=yes \
-        CFLAGS="-pthread" \
-        FREETYPE_CFLAGS="-I/emsdk/upstream/emscripten/cache/sysroot/include/" \
-        FREETYPE_LIBS="-L/emsdk/upstream/emscripten/cache/sysroot/lib -lbz2" &&\
+        CFLAGS="-pthread" &&\
     emmake make -j2 &&\
     emmake make install &&\
     cd .. && rm -rf cairo-${CAIRO_VERSION}.tar.xz cairo-${CAIRO_VERSION}
