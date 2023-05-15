@@ -2,18 +2,14 @@ FROM emscripten/emsdk:latest
 
 SHELL ["/bin/bash", "-c"]
 
-# APT
+# Install build dependencies
 RUN apt update &&\
-    apt install -y python3 cargo pkg-config libtool ninja-build gperf libglib2.0-dev-bin gettext libxml2-utils &&\
-    rm -rf /var/lib/apt/lists/* &&\
-    python3 -m pip install meson
+    apt install -y pkg-config libtool &&\
+    rm -rf /var/lib/apt/lists/*
 
 # ENV
 ENV BUILD_DIR=/i
 ENV PREFIX_DIR=/emsdk/upstream/emscripten/cache/sysroot
-
-# meson
-ADD emscripten.txt ${BUILD_DIR}/emscripten.txt
 
 # opencv
 ENV OPENCV_VERSION=4.6.0
@@ -101,8 +97,20 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     emmake make install &&\
     cd .. && rm -rf expat-${EXPAT_VERSION}.tar.xz expat-${EXPAT_VERSION}
 
+# meson
+RUN apt update &&\
+    apt install -y python3 ninja-build &&\
+    rm -rf /var/lib/apt/lists/* &&\
+    python3 -m pip install meson
+ADD emscripten.txt ${BUILD_DIR}/emscripten.txt
+
+# gperf
+RUN apt update &&\
+    apt install -y gperf &&\
+    rm -rf /var/lib/apt/lists/*
+
 # fontconfig
-# 需要 freetype expat
+# 需要 freetype expat gperf
 ENV FONTCONFIG_VERSION=2.14.1
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://www.freedesktop.org/software/fontconfig/release/fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
@@ -143,6 +151,11 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     emmake make -j2 &&\
     emmake make install &&\
     cd .. && rm -rf libffi-${IFFI_VERSION}.tar.gz libffi-${IFFI_VERSION}
+
+# gettext
+RUN apt update &&\
+    apt install -y gettext &&\
+    rm -rf /var/lib/apt/lists/*
 
 # glib
 # 需要 libffi
@@ -204,6 +217,11 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     meson install -C build &&\
     cd .. && rm -rf fribidi-${FRIBIDI_VERSION}.tar.xz fribidi-${FRIBIDI_VERSION}
 
+# libglib2.0-dev-bin
+RUN apt update &&\
+    apt install -y libglib2.0-dev-bin &&\
+    rm -rf /var/lib/apt/lists/*
+
 # Pango
 # 需要 harfbuzz fribidi fontconfig freetype glib cairo libglib2.0-dev-bin
 ENV PANGO_VERSION=1.50.14
@@ -220,6 +238,11 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     meson compile -C build &&\
     meson install -C build &&\
     cd .. && rm -rf pango-${PANGO_VERSION}.tar.xz pango-${PANGO_VERSION}
+
+# libxml2-utils
+RUN apt update &&\
+    apt install -y libxml2-utils &&\
+    rm -rf /var/lib/apt/lists/*
 
 # libxml2
 ENV XML_VERSION=2.10.3
@@ -266,6 +289,11 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     meson compile -C build &&\
     meson install -C build &&\
     cd .. && rm -rf gdk-pixbuf-${GDK_PIXBUF_VERSION}.tar.xz gdk-pixbuf-${GDK_PIXBUF_VERSION}
+
+# cargo
+RUN apt update &&\
+    apt install -y cargo &&\
+    rm -rf /var/lib/apt/lists/*
 
 # rsvg
 # 需要 libxml2 gdk-pixbuf
