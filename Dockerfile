@@ -128,7 +128,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # libffi
 ENV IFFI_VERSION=3.4.4
-# see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L203
+# see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L258
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/libffi/libffi/releases/download/v${IFFI_VERSION}/libffi-${IFFI_VERSION}.tar.gz &&\
     tar xvf libffi-${IFFI_VERSION}.tar.gz &&\
@@ -144,13 +144,13 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # glib
 # 需要 libffi
-ENV GLIB_VERSION=2.74.1
-# see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L220
+ENV GLIB_VERSION=2.76.2
+# see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L273
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/glib/${GLIB_VERSION%.*}/glib-${GLIB_VERSION}.tar.xz &&\
     tar xvf glib-${GLIB_VERSION}.tar.xz &&\
     cd glib-${GLIB_VERSION} &&\
-    curl -Ls https://github.com/GNOME/glib/compare/${GLIB_VERSION}...kleisauke:wasm-vips.patch | patch -p1 &&\
+    curl -Ls https://github.com/GNOME/glib/compare/${GLIB_VERSION}...kleisauke:wasm-vips-${GLIB_VERSION}.patch | patch -p1 &&\
     meson setup build --prefix=/emsdk/upstream/emscripten/cache/sysroot --cross-file=../emscripten.txt --default-library=static --buildtype=release \
         --force-fallback-for=gvdb -Dselinux=disabled -Dxattr=false -Dlibmount=disabled -Dnls=disabled \
         -Dtests=false -Dglib_assert=false -Dglib_checks=false &&\
