@@ -2,14 +2,13 @@ FROM emscripten/emsdk:latest
 
 SHELL ["/bin/bash", "-c"]
 
-ENV BUILD_DIR=/i
-
-
 # APT
 RUN apt update &&\
     apt install -y python3 cargo pkg-config libtool ninja-build gperf libglib2.0-dev-bin gettext libxml2-utils &&\
     rm -rf /var/lib/apt/lists/* &&\
     python3 -m pip install meson
+
+ENV BUILD_DIR=/i
 
 # meson
 ADD emscripten.txt ${BUILD_DIR}/emscripten.txt
