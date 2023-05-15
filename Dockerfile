@@ -4,25 +4,6 @@ SHELL ["/bin/bash", "-c"]
 
 ENV BUILD_DIR=/i
 
-ENV OPENCV_VERSION=4.6.0
-ENV JPEG_VERSION=2.1.4
-ENV ZLIB_VERSION=1.2.13
-ENV PNG_VERSION=1.6.38
-ENV FREETYPE_VERSION=2.13.0
-ENV EXPAT_VERSION=2.5.0
-ENV FONTCONFIG_VERSION=2.14.1
-ENV PIXMAN_VERSION=0.42.0
-ENV CAIRO_VERSION=1.16.0
-ENV IFFI_VERSION=3.4.4
-ENV GLIB_VERSION=2.74.1
-ENV HARFBUZZ_VERSION=7.3.0
-ENV FRIBIDI_VERSION=1.0.12
-ENV PANGO_VERSION=1.50.11
-ENV XML_VERSION=2.10.3
-ENV SHARED_MIME_INFO_VERSION=2.2
-ENV GDK_PIXBUF_VERSION=2.42.9
-ENV RSVG_VERSION=2.55.1
-ENV WEBP_VERSION=1.2.4
 
 # APT
 RUN apt update &&\
@@ -34,6 +15,7 @@ RUN apt update &&\
 ADD emscripten.txt ${BUILD_DIR}/emscripten.txt
 
 # opencv
+ENV OPENCV_VERSION=4.6.0
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/opencv/opencv/archive/refs/tags/${OPENCV_VERSION}.tar.gz -O opencv-${OPENCV_VERSION}.tar.gz &&\
     tar xvf opencv-${OPENCV_VERSION}.tar.gz &&\
@@ -44,6 +26,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     cd .. && rm -rf opencv-${OPENCV_VERSION}.tar.gz opencv-${OPENCV_VERSION}
 
 # libjpeg
+ENV JPEG_VERSION=2.1.4
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.sourceforge.net/libjpeg-turbo/libjpeg-turbo-${JPEG_VERSION}.tar.gz &&\
     tar xvf libjpeg-turbo-${JPEG_VERSION}.tar.gz &&\
@@ -54,6 +37,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     cd .. && rm -rf libjpeg-turbo-${JPEG_VERSION}.tar.gz libjpeg-turbo-${JPEG_VERSION}
 
 # zlib
+ENV ZLIB_VERSION=1.2.13
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/madler/zlib/releases/download/v${ZLIB_VERSION}/zlib-${ZLIB_VERSION}.tar.xz &&\
     tar xvf zlib-${ZLIB_VERSION}.tar.xz &&\
@@ -67,6 +51,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # libpng
 # 需要 zlib
+ENV PNG_VERSION=1.6.38
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.sourceforge.net/libpng/libpng-${PNG_VERSION}.tar.xz &&\
     tar xvf libpng-${PNG_VERSION}.tar.xz &&\
@@ -79,6 +64,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     cd .. && rm -rf libpng-${PNG_VERSION}.tar.xz libpng-${PNG_VERSION}
 
 # WebP
+ENV WEBP_VERSION=1.2.4
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${WEBP_VERSION}.tar.gz &&\
     tar xvf libwebp-${WEBP_VERSION}.tar.gz &&\
@@ -91,6 +77,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # freetype
 # 需要 libpng zlib
+ENV FREETYPE_VERSION=2.13.0
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.sourceforge.net/freetype/freetype-${FREETYPE_VERSION}.tar.xz &&\
     tar xvf freetype-${FREETYPE_VERSION}.tar.xz &&\
@@ -102,6 +89,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     cd .. && rm -rf freetype-${FREETYPE_VERSION}.tar.xz freetype-${FREETYPE_VERSION}
 
 # expat
+ENV EXPAT_VERSION=2.5.0
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/libexpat/libexpat/releases/download/R_${EXPAT_VERSION//./_}/expat-${EXPAT_VERSION}.tar.xz &&\
     tar xvf expat-${EXPAT_VERSION}.tar.xz &&\
@@ -114,6 +102,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # fontconfig
 # 需要 freetype expat
+ENV FONTCONFIG_VERSION=2.14.1
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://www.freedesktop.org/software/fontconfig/release/fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
     tar xvf fontconfig-${FONTCONFIG_VERSION}.tar.xz &&\
@@ -127,6 +116,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # pixman
 # 需要 zlib
+ENV PIXMAN_VERSION=0.42.0
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://www.cairographics.org/releases/pixman-${PIXMAN_VERSION}.tar.gz &&\
     tar xvf pixman-${PIXMAN_VERSION}.tar.gz &&\
@@ -138,6 +128,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     cd .. && rm -rf pixman-${PIXMAN_VERSION}.tar.gz pixman-${PIXMAN_VERSION}
 
 # libffi
+ENV IFFI_VERSION=3.4.4
 # see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L203
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/libffi/libffi/releases/download/v${IFFI_VERSION}/libffi-${IFFI_VERSION}.tar.gz &&\
@@ -154,6 +145,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # glib
 # 需要 libffi
+ENV GLIB_VERSION=2.74.1
 # see https://github.com/kleisauke/wasm-vips/blob/master/build.sh#L220
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/glib/${GLIB_VERSION%.*}/glib-${GLIB_VERSION}.tar.xz &&\
@@ -169,6 +161,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # cairo
 # 需要 libpng pixman freetype zlib glib
+ENV CAIRO_VERSION=1.16.0
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://www.cairographics.org/releases/cairo-${CAIRO_VERSION}.tar.xz &&\
     tar xvf cairo-${CAIRO_VERSION}.tar.xz &&\
@@ -187,6 +180,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     cd .. && rm -rf cairo-${CAIRO_VERSION}.tar.xz cairo-${CAIRO_VERSION}
 
 # harfbuzz
+ENV HARFBUZZ_VERSION=7.3.0
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/harfbuzz/harfbuzz/releases/download/${HARFBUZZ_VERSION}/harfbuzz-${HARFBUZZ_VERSION}.tar.xz &&\
     tar xvf harfbuzz-${HARFBUZZ_VERSION}.tar.xz &&\
@@ -198,6 +192,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     cd .. && rm -rf harfbuzz-${HARFBUZZ_VERSION}.tar.xz harfbuzz-${HARFBUZZ_VERSION}
 
 # fribidi
+ENV FRIBIDI_VERSION=1.0.12
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://github.com/fribidi/fribidi/releases/download/v1.0.12/fribidi-${FRIBIDI_VERSION}.tar.xz &&\
     tar xvf fribidi-${FRIBIDI_VERSION}.tar.xz &&\
@@ -210,6 +205,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # Pango
 # 需要 harfbuzz fribidi fontconfig freetype glib cairo libglib2.0-dev-bin
+ENV PANGO_VERSION=1.50.11
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/pango/${PANGO_VERSION%.*}/pango-${PANGO_VERSION}.tar.xz &&\
     tar xvf pango-${PANGO_VERSION}.tar.xz &&\
@@ -225,6 +221,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     cd .. && rm -rf pango-${PANGO_VERSION}.tar.xz pango-${PANGO_VERSION}
 
 # libxml2
+ENV XML_VERSION=2.10.3
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/libxml2/${XML_VERSION%.*}/libxml2-${XML_VERSION}.tar.xz &&\
     tar xvf libxml2-${XML_VERSION}.tar.xz &&\
@@ -237,6 +234,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # shared-mime-info
 # 需要 gettext libxml2-utils
+ENV SHARED_MIME_INFO_VERSION=2.2
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://gitlab.freedesktop.org/xdg/shared-mime-info/-/archive/${SHARED_MIME_INFO_VERSION}/shared-mime-info-${SHARED_MIME_INFO_VERSION}.tar.bz2 &&\
     tar xvf shared-mime-info-${SHARED_MIME_INFO_VERSION}.tar.bz2 &&\
@@ -254,6 +252,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # gdk-pixbuf
 # 需要 shared-mime-info
+ENV GDK_PIXBUF_VERSION=2.42.9
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/gdk-pixbuf/${GDK_PIXBUF_VERSION%.*}/gdk-pixbuf-${GDK_PIXBUF_VERSION}.tar.xz &&\
     tar xvf gdk-pixbuf-${GDK_PIXBUF_VERSION}.tar.xz &&\
@@ -269,6 +268,7 @@ RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
 
 # rsvg
 # 需要 libxml2 gdk-pixbuf
+ENV RSVG_VERSION=2.55.1
 RUN mkdir -p ${BUILD_DIR} && cd ${BUILD_DIR} &&\
     wget https://download.gnome.org/sources/librsvg/${RSVG_VERSION%.*}/librsvg-${RSVG_VERSION}.tar.xz &&\
     tar xvf librsvg-${RSVG_VERSION}.tar.xz &&\
